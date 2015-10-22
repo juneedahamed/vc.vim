@@ -1,7 +1,4 @@
 # vc.vim
-Support for SVN, Git, HG and BZR
-
-Work in progress.
 
 VIM (VIM 7 and up) plugin for subversion (svn), GIT, HG and BZR repositories.
 Support for browsing the repository, working copy, bookmarks.
