@@ -66,7 +66,6 @@ Autocompletes command options, file(s), dir(s), repo url(s)
 
 *<b>VCInfo [Arguments]</b>
     Will display repository info.
-    
     <b>Supported On :</b> SVN, GIT, HG, BZR
 
 * <b>VCCopy[!] [Arguments]</b>
