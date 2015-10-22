@@ -7,7 +7,7 @@ VIM (VIM 7 and up) plugin for subversion (svn), GIT, HG and BZR repositories.
 Support for browsing the repository, working copy, bookmarks.
 Autocompletes command options, file(s), dir(s), repo url(s)
 
-NOTE: svnj.vim users, replace all settings from svnj_ to vc_ 
+<b>NOTE</b>: svnj.vim users, replace all settings from svnj_ to vc_ 
 
 
 ##Supported Operations
@@ -15,18 +15,21 @@ NOTE: svnj.vim users, replace all settings from svnj_ to vc_
 * <b>VCAdd[!] [Arguments] </b>
     Add and Commit File(s)/Directories to repository. VCAdd is supported as a command and also as an
     operation from VCStatus and VCBrowse output. Available options are to add or add and then commit.
-    Supported On : SVN, GIT, HG, BZR
+
+    <b>Supported On :</b> SVN, GIT, HG, BZR
 
 * <b>VCCommit[!] [Arguments] </b>
     Performs commit. A new buffer will be opened to accept comments. The buffer will list
     the files which are candidates for commit. Files/Directories can also be updated in this buffer. 
     A commit can be forced with no comments with a bang. VCCommit is supported as a command and 
     also as an operation from the VCStatus|VCBrowseWorkingCopy|VCBrowseBuffer output window. 
-    Supported On : SVN, GIT, HG, BZR
+
+    <b>Supported On :</b> SVN, GIT, HG, BZR
 
 * <b>VCBlame [Arguments] </b>
     Vertically splits the blame info for the file in bufffer. Scrollbinds to the file.
-    Supported On : SVN, GIT, HG, BZR
+    
+    <b>Supported On :</b> SVN, GIT, HG, BZR
 
 * <b>VCStatus [Arguments]</b>
     Get the output of status command. With the listed files in the split buffer which states the filename
@@ -37,7 +40,8 @@ NOTE: svnj.vim users, replace all settings from svnj_ to vc_
       - Commit selected/marked files
       - Add selected/marked files 
       - Bookmark
-    Supported On : SVN, GIT, HG, BZR
+      
+    <b>Supported On :</b> SVN, GIT, HG, BZR
 
 * <b>VCLog [Arguments]</b>
     Lists the log for the current file in buffer.  The output displays the revision, author, comments 
@@ -50,41 +54,50 @@ NOTE: svnj.vim users, replace all settings from svnj_ to vc_
     - Diff :HEAD | :PREV  with selected revision (most useful with dirs only SVN)
     - Open marked revisons or revison under cursor as new file - newbuffer or vspilt
     - View Info and Log of revision
-    Supported On : SVN, GIT, HG, BZR
+    
+    <b>Supported On :</b> SVN, GIT, HG, BZR
 
 * <b>VCDiff [Arguments]</b>
     Immediate diff the file in buffer with the previous/specified revision. If there are more than one file in 
     buffer Ctrl-n/Ctrl-p will close the current diff and move to the next/prev file in buffer. 
     Ctrl-Up and Ctrl-Dowm will move across revisions for the same file
-    Supported On : SVN, GIT, HG, BZR
+
+    <b>Supported On :</b> SVN, GIT, HG, BZR
 
 *<b>VCInfo [Arguments]</b>
     Will display repository info.
-    Supported On : SVN, GIT, HG, BZR
+    
+    <b>Supported On :</b> SVN, GIT, HG, BZR
 
 * <b>VCCopy[!] [Arguments]</b>
     Copy files (repo or local)
-    Supported On : SVN, HG
+
+    <b>Supported On :</b> SVN, HG
 
 * <b>VCMove [Arguments]</b>
      Move files. The buffer will be auto reloaded
-     Supported On : SVN, GIT, HG
+
+     <b>Supported On :</b> SVN, GIT, HG
 
 * <b>VCRevert[!]</b>
      Revert to the latest revision, operates on the file in buffer. ! causes the buffer to auto reload
-     Supported On : SVN, GIT, HG, BZR
+     
+     <b>Supported On :</b> SVN, GIT, HG, BZR
 
 * <b>VCFetch</b>
      Fetch from repo (applicable for git only), auto completes available branches and options
-     Supported On : GIT, HG, BZR
+     
+     <b>Supported On :</b> GIT, HG, BZR
 
 * <b>VCPull</b>
      Pull from repo (applicabe for git, hg, bzr), auto completes available branches and options
-     Supported On : GIT, HG, BZR
+     
+     <b>Supported On :</b> GIT, HG, BZR
       
 * <b>VCPush</b>
      Push to repo (applicabe for git, hg, bzr), auto completes available branches and options
-     Supported On : GIT, HG, BZR
+     
+     <b>Supported On :</b> GIT, HG, BZR
      
 * <b>VCIncoming</b>
      HG Incoming (applicable for hg only)
