@@ -1,0 +1,1241 @@
+*vc.txt*                       7.4                                     v0.3
+*vc* *vc.vim"
+
+================================================================================
+CONTENTS                                             *vc-contents*
+    1. INTRO..........................................|vc-intro|
+    2. COMMANDS.......................................|vc-commands|
+    2. FILTER/PROMPT..................................|vc-filter|
+    3. AUTHENTICATION.................................|vc-authentication|
+    4. OPTIONS........................................|vc-options|
+    5. MAPPINGS.......................................|vc-mappings|
+    6. CUSTOMIZE......................................|vc-customize|
+    7. RECOMENDED Settings............................|vc-recomended-settings|
+================================================================================
+
+INTRO                                                              *vc-intro*
+
+Plugin for subversion and limited support for git, hg(Mercurial), bzr(Bazaar). 
+Supported operations are
+
+    info   use |VCInfo|
+    status use |VCStatus|
+    diff   use |VCDiff| or |VCLog| 
+    add    use |VCAdd|
+    commit use |VCCommit|
+    blame  use |VCBlame|
+    log    use |VCLog|  
+    list   use |VCBrowse| 
+    revert use |VCRevert|
+    copy   use |VCCopy|
+    move   use |VCMove|
+
+     misc      |VCBrowseWorkingCopy| 
+               |VCBrowseMyList| 
+               |VCBrowseBookMarks|
+               |VCClearCache|
+               |VCBrowseBuffer|
+
+    Subversion Only
+        svn co   use |VCBrowseRepo|
+        svn repo use |VCBrowseRepo|
+
+    GIT, HG(Mercurial), BZR(Bazaar)
+        git push  use |VCPush|
+        git pull  use |VCPull|
+
+    GIT only
+        git fetch use |VCFetch|
+    
+    HG only
+        hg incoming use |VCIncoming|
+        hg outgoing use |VCOutgoing|
+
+
+================================================================================
+COMMANDS                                                         *vc-commands*
+
+
+:VCInfo [Arguments]                                                *VCInfo*
+
+  Display repository info, autocompletes available options
+
+  Arguments:~
+
+   <none|%>     : Info of the current dir if no file in buffer else 
+                  of Info of file in buffer
+   <file/dir>   : Info of the passed file/dir
+    .           : Info of current dir
+   <-target>    : Use this to specify a target, useful for svn repository url
+   <-svn|-git|
+     -hg|-bzr>  : Force plugin to identify a repo as default, see |VCDefaultrepo|
+
+  Examples:~
+
+    :VCInfo     
+     The above command acts on buffer if file available else current dir
+
+    :VCInfo  %
+     The above command acts on buffer file
+
+    :VCInfo -target dir1/dir2/1.txt
+    :VCInfo dir1/dir2/1.txt
+     The above commands acts on dir1/dir2/1.txt
+    
+    :VCInfo svn://ipaddress/dir1/dir2    
+     The above command may fail to parse the above as a svnn url and can list
+     the vc info for the current directory so force it to identify using -target
+     option as.  :VCInfo -target svn://ipaddress/dir1/dir2
+
+    :VCInfo -svn
+     If the directory belongs to more than one repo svn will be used
+
+    :VCInfo -bzr
+     If the directory belongs to more than one repo bzr will be used
+
+:VCStatus [Arguments]                                              *VCStatus* 
+
+  Lists the output of the status command, autocompletes available options
+
+  Arguments:~
+
+   <none>               : List status from the working root dir/current dir
+                          Working Copy Root Path is available only in the new versions of svn
+                          Current Dir will be chosen if old version of svn
+                          Check using svn info .
+   <dir>                : Lists status from the specified directory. Autocomplete dirs
+    .                   : Lists status from the current directory.
+   <-target>            : Use this to specify a target, useful for svn repository url
+
+    <-q|-u>             : Subversion only
+
+    <--ignored|--untracked-files> :  git only
+    <--all|--modified|--added|
+      --removed|--deleted|--clean|--ignored"> : HG only
+
+   <-svn|-git|
+     -hg|-bzr>  : Force plugin to identify a repo as default, see |VCDefaultrepo|
+
+  Key-Mappings:~
+  
+  < ? >        : Show quick help 
+  <Enter>      : Open file under cursor and those marked
+  <Ctrl-space> : Select/Mark the file for open
+  <Ctrl-o>     : Open all listed file
+  <Ctrl-i>     : info 
+  <Ctrl-d>     : Diff with the file in buffer (svn diff)
+  <Ctrl-w>     : Toggle the wrap settings
+  <Ctrl-s>     : Toggle Sticky avialable only on GUI, not in terminal vi
+  <Ctrl-e>     : Select/Mark All
+  <Ctrl-z>     : Commit selected/marked file/directories to repository
+  <Ctrl-g>     : Add selected/marked as new repo elements
+  <Ctrl-b>     : Bookmark the dir/file. To persist the bookmarks across sessions please
+                  see help |g:vc_browse_bookmarks_cache| or |g:vc_browse_cache_all|
+  <F4>         : Toggle ARGS mode
+  <F5>         : Redraw the buffer
+  <F6>         : Log to log file defined at |g:vc_log_name|
+
+  Global-Options:~
+
+  See help on following options  |g:vc_max_open_files|, |g:vc_ignore_files|,
+  |g:vc_signs|, |g:vc_window_max_size|, |g:vc_fuzzy_search|
+
+
+:VCDiff[!]                                                           *VCDiff*
+
+  VimDiff the current file in buffer. For diff with other revisions
+  use |VCLog| and then select the required revision to diff. Other possibilities 
+  are to use any any browse commands and then diff with the browsed file.
+
+  Arguments:~
+    <-revision> : Diff with the specified revision for the file in buffer
+   <-svn|-git|
+     -hg|-bzr>  : Force plugin to identify a repo as default, see |VCDefaultrepo|
+    !           : forces diff to start with the revision from the trunk/branch for
+                  subversion
+
+  Key-Mappings:~
+
+    When at diff mode, following are enabled
+    <ctrl-h>    : Show quick help 
+    <Ctrl-i>    : Brings up repo info 
+    <Ctrl-q>    : Quits diff mode
+    <Ctrl-n>    : Closes diff of the current buffer and diffs the next buffer
+    <Ctrl-p>    : Closes diff of the current buffer and diffs the prev buffer
+  
+    <Ctrl-up>   : Closes diff of the current buffer and diffs the next revision
+    :VCDiffNew  : Closes diff of the current buffer and diffs the next revision
+  
+    <Ctrl-down> : Closes diff of the current buffer and diffs the prev revision
+    :VCDiffOld  : Closes diff of the current buffer and diffs the prev brevision
+                  (for MAC users as Ctrl-up | Ctrl-down is default key map for
+                   launching mission control, so can use 
+                    :VCDiffOld and :VCDiffNew instead)
+
+  Examples:~
+    
+    :VCDiff 
+     Diff the file in buffer
+    
+    Diff With a specific revision as follows
+    SVN 
+    :VCDiff -revision r450
+    
+    Git 
+    :VCDiff -revision d8a7709
+    :VCDiff -revision HEAD^
+    :VCDiff -revision HEAD^^
+    
+    HG (Mercurial) 
+    :VCDiff -revision 16627
+    
+    BZR (Bazaar) 
+    :VCDiff -revision 1
+
+
+:VCCommit[!] [Arguments]                                          *VCCommit*
+ 
+  Commits the file in buffer to repo. The other option to commit is using 
+  |VCStatus|, |VCBrowseWorkingCopy|, |VCBrowseBuffer| command. A commit buffer
+  will list the files that are selected for commit, The commit buffer provides
+  option to unselect any file from performing commit by deleting the
+  line listed in the file from the commit buffer.
+
+  Arguments:~
+ 
+   <none|%>  : A commit buffer will be displayed to accept comments for commiting the
+               file in buffer
+  <dir/file> : Accepts directories/files (autocompletion available). 
+      !      : Quick way to commit without bringing up the commit buffer if no comments
+               are provided will force commit without comments. For comments use -m option
+
+   <-svn|-git|
+     -hg|-bzr>  : Force plugin to identify a repo as default, see |VCDefaultrepo|
+
+    --local
+    --author
+    --fixes  : For bazaar
+
+    --dry-run
+    --amend  : For git
+    
+  Key-Mappings:~
+    <Ctrl-z> : Commit 
+    <Ctrl-q> : Quit
+    <Ctrl-m> : Commit ammend - git only
+    <Ctrl-a> : Fetch previous commit comment, for use at commit ammend - git only
+    <Ctrl-n> : Commit dry-run - git only
+     :w      : Write the commit buffer to send commands
+    
+    
+:VCAdd[!] [Arguments]                                                *VCAdd*
+
+  Add and Commit new files/directories to repo,  Other way is to use the 
+  |VCStatus|, |VCBrowse| outputs. The command brings out VC Add buffer
+  with the list of files selected. The files can be deleted/added here 
+  (should follow the same syntax to add). 
+
+  Arguments:~
+ 
+   <none|%>    : Adds the file in buffer to repo
+  <dirs/files> : Accepts directories/files (autocompletion available). 
+      !        : Quick way to add without bringing up the add buffer 
+
+
+    --dry-run
+    --amend   : For git
+
+   <-svn|-git|
+     -hg|-bzr>  : Force plugin to identify a repo as default, see |VCDefaultrepo|
+  
+  Key-Mappings:~
+     :w      : Write the add buffer to send commands
+    
+:VCBlame [Arguments]                                                 *VCBlame*
+
+  Vertically splits the blame info for the file in bufffer. Scrollbinds to the
+  file.
+  
+  Arguments:~
+
+   <none|%>     : Blame of the current file in buffer
+   <file>       : Blame of the passed file
+   <-target>    : Use this to specify a target, useful for svn repository url
+   <-svn|-git|
+     -hg|-bzr>  : Force plugin to identify a repo as default, see |VCDefaultrepo|
+
+
+
+:VCLog[!]  [Arguments]                                                      *VCLog*
+
+  Lists the log for the current file in buffer or the target specified.
+  To diff with a single revision navigate to the line using Up and Down Arrows
+  and then press Enter. Diff will be done with selected revision and the buffer 
+  file. Supports up to 2 revisions to be selected for diff. Autocompletes available
+  options.
+  Also can view the logs from |VCBrowseWorkingCopy|, |VCBrowseBuffer|, 
+  |VCBrowseBookMarks|
+
+  Arguments:~
+
+  < none | % > : Log for the file in buffer. If no file in current buffer log of the
+                 current directory will be displayed
+
+  <dir/file>   : Accepts directories/files (autocompletion available). Will provide log
+                 of the directory or file specified in argument
+
+   "."         : Will display log of the current working directory
+
+   <-target>   : Use this to specify a target, useful for svn repository url
+
+      !        : use bang when a file is diffed and want to go to a different diff
+                 after selecting the version from the VCLog output.
+                 Example
+                 1. Diff a file using VCDiff
+                 2. Use VCLog! on the diff (readonly file)
+                 3. The cursor will be placed on the current revision on VCLog output
+                    Now move the cursor to what evert revision and press enter. 
+                    The older revision from the diff buffer will be replaced by
+                    the new selected revision. 
+                    Without a bang on VCLog you will be left with three diffs
+
+   <-l|--stop-on-copy>
+               : SVN, Number of logs to be displayed, When not specifies g:vc_max_logs is
+                  used
+   < -n |
+     --reverse |
+     --author |
+     --until | 
+     --since |
+     --after |
+     --before >  : GIT only options for log, autocompletes
+
+    <-d|--date|--rev|-r|-u|-l|-b> : HG options
+    <-d|--data|--rev|-l|-b>       : BZR options
+
+   <-svn|-git|
+     -hg|-bzr>  : Force plugin to identify a repo as default, see |VCDefaultrepo|
+
+  Key-Mappings:~
+ 
+  < ? >        : Show quick help 
+  <Enter>      : Opens file at cursor for diff
+                 If files were marked, opens all marked files for diff (max 2)  
+                 Mapped Ctrl-q to the diffed buffer
+  <Ctrl-Enter> : Open marked revisons or revison under cursor as new file - no split
+  <Ctrl-v>     : Vertical split the revision
+  <Ctrl-i>     : Info and Log of revision
+  <Ctrl-w>     : Toggle the wrap settings. Helpful if the comments are longer
+  <Ctrl-y>     : Display the command used
+  <Ctrl-u>     : Move one step up
+  <Ctrl-t>     : Go to start
+  <Ctrl-Space> : To mark the revision for diff.
+  <Ctrl-a>     : Affected/Modified files for the revision (most useful with dirs)
+                  see |Affectedfiles|
+  <Ctrl-s>     : Toggle Sticky avialable only on GUI, not in terminal vi for now
+  <F4>         : Toggle ARGS mode
+  <F5>         : Redraw the buffer
+  <F6>         : Log to log file defined at |g:vc_log_name|
+  <Ctrl-h>     : SVN Diff :HEAD with selected revision (most useful with dirs) 
+                 SVN repo only
+  <Ctrl-p>     : SVN Diff :PREV with selected revision (most useful with dirs)
+                 SVN repo only
+
+  Global-Options:~
+
+  See help on following options |g:vc_send_soc_command|, |g:vc_trunk_url|
+  |g:vc_branch_url|, |g:vc_warn_branch_log|, |g:vc_max_logs|, 
+  |g:vc_max_diff|, |g:vc_max_open_files|, |g:vc_fuzzy_search|
+  |g:vc_fuzzy_search_result_max|, |g:vc_signs|, |g:vc_sticky_on_start|
+
+  Examples:~
+
+  + To list the affected files in current dir
+    :VCLog .  
+    Go to required revision and press Ctrl-a
+
+  + To list the affected files from subdirectories of current working dir
+    :VCLog directory
+    Go to required revision and press Ctrl-a
+
+  + To see the log of file in buffer
+    :VCLog
+
+  + To see the log of file not in buffer
+    :VCLog path/to/file
+
+  + To see the log of an svn url 
+    :VCLog -target svn://ipaddress/path/to/file
+
+  + How to use sticky and Ctrl-q 
+    Added Ctrl-q to the files diffed from VCWindow. Press Ctrl-q on the diffed
+    file if the sticky is enabled on vc window, the control/cursor will land back
+    on the vc window.  Very helpfull when need to diff/compare a few versions for
+    a given file. Here is the scenario.
+
+    1. VCLog <filename>  -l 20   
+    1. VCLog <filename>  -n 20   
+        The above command opens 20 logs for the given filename if provided else
+        takes any file in buffer. If no file in buffer will log for current directory
+        The -l is for svn, -n for git
+
+   2. Press Ctrl-s on vc window.  STICKY should be displayed on the status line
+
+   3. Take the cursor to the requiered revision line and Press Enter.
+       The revision will be diffed with the file in buffer. 
+       Perform any operations needed there.  And make sure the cursor when done is
+       on the buffer which was last opened
+
+   4. Press Ctrl-q
+      This will end the diff session and control back to vc window
+      repeat again from Step 3.
+    
+:VCRevert[!] [Arguments]                                                *VCRevert*
+
+  Revert/Checkout files that are modified, svn uses svn revert, git uses git checkout
+  Works only for the file in buffer
+
+  Arguments:~
+ 
+   <none>      : Works on the current buffer file
+      !        : With bang the file will be reloaded without user intervention,
+                 NOTE: the modified/old contents will be lost
+
+   <-svn|-git|
+     -hg|-bzr>  : Force plugin to identify a repo as default, see |VCDefaultrepo|
+  
+:VCCopy[!] [Arguments]                                                *VCCopy*
+
+  Copy files. Use VCCopy as command or use the browser, key mappings in 
+  |VCBrowse|
+
+  Arguments:~
+  < none | % > : Copy the file in buffer to given name or dir
+
+  <dir/file>   : Accepts directories/files (autocompletion available). 
+
+      !        : With bang the file from new locationwill be reloaded
+                 without user intervention,
+
+   <-svn|-git|
+     -hg|-bzr>  : Force plugin to identify a repo as default, see |VCDefaultrepo|
+
+      -fs      : Forces to do a filesystem copy instead of repo copy
+
+:VCMove [Arguments]                                                  *VCMove*
+
+  Move or Rename files. Use VCMove as command or use the browser, key mappings 
+  in |VCBrowse|
+
+  Arguments:~
+  < none | % > : Move/Rename the file in buffer to given name or dir
+
+  <dir/file>   : Accepts directories/files (autocompletion available). 
+
+   <-svn|-git|
+     -hg|-bzr>  : Force plugin to identify a repo as default, see |VCDefaultrepo|
+
+      -fs      : Forces to do a filesystem move instead of repo move/rename
+
+ 
+:VCDefaultrepo                                               *VCDefaultrepo*
+    Set the default repo to the either -svn, -git, -hg or -bzr. Command auto
+    completes available repos. Can also set as default repo using a global variable
+    |g:vc_default_repo|
+    This can be overidden by commands using -svn | -git | -hg | -bzr options where 
+    applicable
+    Please note that the repos will be identified automatically by the plugin
+
+    These options help for cases where a project/dir exists in multiple repos
+    One for myself have few projects in SVN and i use git to clone the project
+    on my laptop so that i donot need the internet to contact the server every 
+    time for say viewing logs and diffs and once done/or when required i just 
+    commit on to the SVN branch/trunk using svn
+
+
+:VCPush                                                             *VCPush*
+    Git, HG, BZR only, do a push using VCPush, autocompletes branch names
+
+:VCPull                                                             *VCPull*
+    Git, HG, BZR only, do a pull using VCPull, autocompletes branch names and 
+    few options
+
+:VCFetch                                                             *VCFetch*
+    Git only, do a fetch using VCFetch, autocompletes branch names and few options
+
+:VCIncoming                                                         *VCIncoming*
+    HG only, see what files/revisions are incoming
+
+:VCOutgoing                                                         *VCOutgoing*
+    HG only, see what files/revisions are outgoing
+
+
+:VCBrowse                                                           *VCBrowse*
+  
+  This is the main startup for browsing commands. It provides a menu for browsing
+  the repository, working copy/local fs, bookmarks and the directories/files stored as
+  permanent book marks using the corresponding options
+
+  Options/Menu:~
+    1. Repository - Browses Repository - ony svn supported
+    2. Working copy - This is the working copy. local files. 
+    3. MyList - The list provided by g:vc_browse_mylist (use as permanent bookmarks)
+    4. BookMarks - Bookmarks with <Ctrl-b> mapping. This is persisted only for the
+                   current session. To persist the bookmarks across sessions please
+                   see help |g:vc_browse_bookmarks_cache| or |g:vc_browse_cache_all|
+    5 Buffer - Lists the buffer files
+ 
+  
+  Key-Mappings:~
+    The following are the operations supported by the Browsing Commands. 
+
+  < ? >        : Show quick help 
+
+  |Enter|      : If directory, lists all files with in the directory.
+                 If file, opens the file in new buffer
+
+  |Ctrl-Enter| : If directory list files using recursive command
+                 If file, opens the file in buffer
+
+  |Ctrl-u|     : Navigate back. NOTE: The Enter works as Navigate forward 
+
+  |Ctrl-t|     : Go to start
+
+  |Ctrl-j|     : Check VCStatus
+
+  |Ctrl-o|     : Opens all files (directories will be ignored). The number of files
+                 that will be opened depends on the value specified at
+                 |g:vc_max_open_files| 
+
+  |Ctrl-v|     : Vertical split
+
+  |Ctrl-d|     : Opens the marked/selected file in diff mode with the file in buffer
+                 See |VCDiff| for diff mode key-mappings |VCDiff|
+
+  |Ctrl-l|     : Opens the log for the file under cursor line.
+                 Once the log is displayed can Navigate back as <Ctrl-u>
+                 All operations supported by |VCLog| are supported along with 
+                 <Ctrl-u>  to navigate back
+
+  |Ctrl-i|     : Info 
+
+  |Ctrl-space| : Toggle selection of the file
+
+  |Ctrl-b|     : Bookmark the dir/file. To persist the bookmarks across sessions please
+                   see help |g:vc_browse_bookmarks_cache| or |g:vc_browse_cache_all|
+
+  |Ctrl-e|     : Toggle Select/Mark all
+
+  |Ctrl-r|     : Refresh. When caching/persistency is enabled using 
+                 |g:vc_browse_cache_all| or |g:vc_browse_repo_cache| the cache will
+                 be cleared and the contents fetched again. The caching is done only if
+                 the recursive listing is used using |Ctrl-Enter| This helps for faster
+                 navigation.  Use |VCClearCache| to clear all cached info. See also
+                 |g:vc_cache_dir| 
+
+  |Ctrl-s|     : Toggle Sticky avialable only on GUI, not in terminal vi
+
+  |Ctrl-g|     : Add selected/marked as new repo elements
+
+  |Ctrl-z|     : Commit selected/marked  
+
+  |Ctrl-k|     : Checkout only svn
+                 Hint : Use Bookmarks or MyList feature to store the repo root so that
+                 can be browsed when need to checkout.  
+  |Ctrl-p|     :
+               For Git: No op
+               |VCBrowseRepo| 
+                Pastes the selected urls to new dir location,
+                The paste on repo requires a commit so a buffer will be opened to
+                enter comments for the commit 
+              |VCBrowseWorkingCopy|
+                 Differs from repo paste, as this does not lead to commit automatically
+                 Only files/directories will be copied to new location. To commit use
+                 VCtatus and perform commit
+
+  |Ctrl-x|     : Moves/Renames selected file to new location if dir or overwrites the
+                 selected file
+               For Git: git mv
+                   SVN: svn mv
+                   HG : hg mv
+        
+  |Ctrl-h|    : |VCBrowseRepo| 
+                    Jumps to the root of the repository
+              |VCBrowseWorkingCopy|
+                    Jumps to the root of the working copy requires new svn version which
+                    supports "Working Copy Root Path" in svn info command output. 
+                    If using an older svn version, will jump to $HOME.
+                    If current dir/browsing at the working copy root itself pressing again
+                    Ctrl-h will jumpt to $HOME
+
+  |Ctrl-q|   : Only in VCBrowseBuffer| Closes the buffer, calls buffer delete aka :bd 
+  
+    <F4>     : Toggle ARGS mode
+    <F5>     : Redraw the buffer
+    <F6>     : Log to log file defined at |g:vc_log_name|
+
+
+:VCBrowseRepo [Arguments]                                         *VCBrowseRepo*
+
+  Browse the entire SVN Repository with this command. Autocompletes SVN URLs
+
+  Arguments:~
+
+  <none>      : Starts at the current directory, the current directory
+                   should be a working copy
+  <directory> : Starts browsing at the specified directory
+
+  "/"         : Will start browsing from the root of the repository
+
+ <-target>     : Takes repo url, autocompletes
+ 
+  Key-Mappings:~
+    Look at <Key-Mappings> defined under |VCBrowse|
+
+:VCBrowseWorkingCopy [Arguments]                             *VCBrowseWorkingCopy*
+
+  Browse the local filesystem, Command takes in the following arguments.
+
+  <none>      : Starts at the current directory
+  <directory> : Starts browsing at the specified directory 
+  <-target>   : Starts browsing from the given target
+  <-svn|-git|-hg> : Force plugin to identify a repo as default , see |VCDefaultrepo|
+  
+  Key-Mappings:~
+    Look at <Key-Mappings> defined under |VCBrowse|
+  
+:VCBrowseMyList                                                 *VCBrowseMyList*
+
+   Browse the repo/local file system from a given target in g:vc_browse_mylist.
+   This can be used as a permanent bookmark holder. 
+
+   Key-Mappings:~
+    Look at <Key-Mappings> defined under |VCBrowse|
+
+:VCBrowseBookMarks                                             *VCBrowseBookMarks*
+    
+  While browsing the repo/working copy you can bookmarks the dir/files with <Ctrl-b>
+  key. All of the book marked files will be listed here. All of the browsing options
+  are again valid. These bookmarked files/dirs are available only for the current
+  vim session unless caching is enabled, Once vim is closed all bookmarks are lost. 
+  If you need some of the dirs/files as bookmarks across sessions without enabling
+  the caching use the mylist opiton i,e |VCBrowseMyList| and code in .vimrc the 
+  |g:vc_browse_mylist| with values as mentioned in the description of
+  |g:vc_browse_mylist|
+   
+  Key-Mappings:~
+     Look at <Key-Mappings> defined under |VCBrowse|
+
+:VCBrowseBuffer                                                *VCBrowseBuffer*
+
+  This will list the files in buffer. It has a new op along with other operations
+  supported for Browsing.
+  
+   Key-Mappings:~
+     Look at <Key-Mappings> defined under |VCBrowse|
+
+:VCRaw [Arguments]                                                   *VCRaw*
+
+  Send any command to shell using VCRaw, Just uses "exec ! " . The response
+  can be logged to the logfile, see Arguments section
+
+  Arguments:~
+
+    <--vclog> : If g:vc_log_name is configured the command response will be
+                logged to the said file. 
+        %     : Will be expanded to buffer filename
+
+                                                                  
+Affected Files                                                  *Affectedfiles*
+    These are the files that are listed due to the <Ctrl-a> key from |VCLog| for
+    a given revision on a file or Enter on the log of a directory.
+    The files that are the set of modifications on a given revision are listed
+    The listed files can than be opened for the said revision or open the 
+    corresponding local files.  Default Enter Key opens the local files, 
+    <Ctrl-Enter> opens the said revision files. 
+    When a revisioned file is opened the following are mapped to the buffer only
+
+   <C-h> is mapped to show help from with in the buffer
+   <C-D> or :VCDiffLocal is mapped to diff with corresponding local file.
+
+   The other way to open the revision file is to use the VER MODE, where selections
+   per file to open a revision or local file can be made.  see |vc-filter| for 
+   VER MODE
+    
+    
+
+VCClearCache                                                      *VCClearCache*
+
+This command clears all cached files. The caching is not enabled by default. 
+Please look at
+ |g:vc_browse_cache_all|
+ |g:vc_browse_bookmarks_cache|
+ |g:vc_browse_repo_cache|
+ |g:vc_browse_workingcopy_cache|
+ |g:vc_cache_dir|
+ |g:vc_browse_max_files_cnt| and 
+ |g:vc_browse_repo_max_files_cnt| for more info. 
+
+NOTE on UNIX/OSX setting |g:vc_browse_cache_all| to 1 will enable all
+of the feature. The rest of the options can be used to fine grain to the need.
+Example at .vimrc >
+
+  let g:vc_browse_cache_all = 1
+<
+
+================================================================================
+VC-FILTER                                                         *vc-filter*
+VC-PROMPT                                              
+
+FUZZY:
+The filter/prompt provides fuzzy searching, see g:vc_fuzzy_* for some of the 
+options supported.
+Toggle using global options or using & as suffix when keyed in at filter
+
+ARGS MODE:
+The filter/prompt has an ARGS mode to support accepting arguments for commands
+see |g:vc_prompt_args| for more info
+Toggle using a key use ? at filter to see the key
+
+VER MODE:
+When affected files are listed the default select/mark uses non revision/version
+files. In case if we need to open a revisioned file enable VER(SION) mode by using
+key <F7>. When enabled the prompt status line will show VER.
+Toggle using a key use ? at filter to see the key, also see |Affectedfiles|
+
+STICKY MODE:
+Enables the filter/prompt buffer not to disappear when a selection is made
+see |g:vc_sticky_on_start|, |g:vc_custom_sticky_hl|
+Toggle using a key use ? at filter to see the key
+
+SORTING:
+Key <F8> sorts the output, Of Date is available sorts on date else on first column
+Each press of <F8> will reverse the sorting
+
+HINTS for fuzzy searching and toggle off the fuzzy:
+
+The following helps to filter the required searches
+At the filter prompt using & to force the filter to match the exact string instead of
+doing fuzzy
+
+Example:
+
+filter: updated&
+
+The above updated will be matched with out fuzzy. 
+
+filter: updated&experi
+
+The above example will match "updated" without fuzzy and experi as fuzzy, continue
+the same way
+
+filter: updated&experi&test
+
+The above example will match updated and experi without fuzzy and test will be fuzzy
+search
+
+================================================================================
+AUTHENTICATION                                              *vc-authentication*
+
+Description:~
+
+Only for SVN repository
+When username/passwords are stored locally and not provided for the commands 
+against SVN then no need to set any info for VC. However cases where the 
+username/passwords are chosen not to be stored locally and you have been providing
+the authentication with the required commands then the username/password will be 
+required for commands (example  svn log, commit etc.,)
+
+Plugin supports SVN authentications to be supplied by either the settings or when an
+command fails due to authentication error.
+
+Providing the info from settings (.vimrc) requires that the username/password in
+plain text, If this is not desired pugin will prompt for the username/password 
+when a commands fails with authentication error. The username/password provided
+will be cached locally and will be available only for the current vim session 
+(i,e new vim window will request auth again when a command fails authentication)
+
+The following are the settings available
+
+
+                                                        *'g:vc_username'*
+This option is used to store the svn username example at .vimrc code >
+    let g:vc_username="user1"
+<
+
+                                                         *'g:vc_password'*
+This option is used to store the svn password example at .vimrc code >
+    let g:vc_password="passwordforuser1"
+<
+
+                                                     *'g:vc_auth_disable'*
+This option is used to disable the feature. Plugin will not prompt for username
+and password even if the command fails authentication, The default is 0.
+i,e the feature is enabled to disable this feature at .vimrc code >
+
+    let g:vc_auth_disable=1
+<
+
+                                                         *'g:vc_auth_errno'*
+                                                         *'g:vc_auth_errmsg'*
+This option is used to identify that the authentication is required to prompt
+for username and password when not provided. The default value is E170001. 
+Donot change unless required or a new error code from svn is available,
+vc_auth_errmsg default is '\cusername\|\cpassword'
+
+                    
+================================================================================
+OPTIONS                                                     *vc-options*
+
+Description:~
+
+Applicable only for SVN
+This variable along with |g:vc_branch_url| are used to retrieve the files from 
+branches and trunk for |VCLog| command. If these option are set to proper values
+plugin shall be able to display files from the trunk and other branches. Helpful to
+diff and logs of files across branches and/or trunk.
+
+For in depth |g:vc_branch_url| option look further down at |g:vc_branch_url|
+description where multiple branches/directories can now be specified. These values
+should point to the parent directory of the checkedout copy at the svn server 
+
+|g:vc_trunk_url| do not support coma separated values
+|g:vc_branch_url| does support coma separated values
+>
+    let g:vc_branch_url = svn://127.0.0.1/Path/until/branches
+    let g:vc_trunk_url = svn://127.0.0.1/Path/until/trunk
+<
+
+Example 1:
+  Lets say for a given file sample.txt
+  -------------------------------------------------------------------------------
+  SVN Trunk is  "svn://127.0.0.1/Root/trunk/dir1/dir2/sample.txt"
+  SVN Branch is "svn://127.0.0.1/Root/branches/example_branch1/dir1/dir2/sample.txt"
+  
+  The vimrc settings
+  let g:vc_trunk_url = "svn://127.0.0.1/Root/trunk"
+  let g:vc_branch_url = "svn://127.0.0.1/Root/branches"
+
+                                                           *'g:vc_branch_url'*
+This option is used to specify the branch details for use with |VCLog| command,
+This option takes in coma separated svn urls for branches/directories. 
+A simple example is given along with the |g:vc_trunk_url| description. 
+Even if there is only one url that has all the branches providing in depth directories
+here will help narrow down the file searches during file look ups
+
+  Lets say for a given file sample.txt
+  SVN Branch is "svn://127.0.0.1/Root/branches/example_branch1/dir1/dir2/sample.txt"
+  at the server.
+  
+  The following entries are valid for |g:vc_branch_url| >
+  
+  let g:vc_branch_url = ["svn://127.0.0.1/Root/branches",
+                          \ "svn://127.0.0.1/Root/branches/example_branch1",
+                          \ "svn://127.0.0.1/Root/branches/example_branch1/dir1",
+                          \ "svn://127.0.0.1/Root/branches/example_branch1/dir1/dir2"]
+<
+
+  (NOTE: The "\" at the second, third and fourth line lets vim know that it is a 
+   continuation of the same string)
+  
+  With above values, when option to list branches for sample.txt is chosen 
+  The branches menu will display all of the 4 options specified above. Selecting 
+  say the last option "svn://127.0.0.1/Root/branches/example_branch1/dir1/dir2"
+  and pressing Enter will search for the files from the directory onwards to be more
+  specific the command used will be
+  svn list -r svn://127.0.0.1/Root/branches/example_branch1/dir1/dir2 
+  The advantage of this would be the faster retrieval of files.
+  
+  It is not required to have the same root. If the branches are in different 
+  locations, continue adding those with coma seperations. 
+
+
+                                                           *'g:vc_browse_mylist'*
+This option is used with |VCBrowseMyList| command. If this option is not specified,
+|VCBrowseMyList| will start at the current working directory. The contents should
+be list of directories/files with absolue path. It can be a string with coma 
+separated directories/files or a list of directories/files.
+Use this as a permanent book mark to browse quickly.  
+
+NOTE : 1. The directories should end with a "/" 
+       2. The files should not end with a "/"  >
+
+  let g:vc_browse_mylist = ["svn://127.0.0.1/Root", "/home/user/myproject/core/",
+                             \  "/home/user/myfile.txt"]
+                    OR
+  let g:vc_browse_mylist = "svn://127.0.0.1/Root, /home/user/myproject/core/,
+                             \ /home/user/myfile.txt"
+<
+
+                                                   *'g:vc_warn_branch_log'*
+This option is used to control showing the error messages when the branches
+are not retrieved, The default is 1. In order to disable this set 0
+To change example at .vimrc code >
+    let g:vc_warn_branch_log = 0
+<
+
+                                                   *'g:vc_donot_confirm_cmd'*
+This option is used to control the display of confirmation before a cmd is
+sent for example commit, add and copy. If the confirmation is not be dispalyed
+set this option to 1, the default is 0
+To change example at .vimrc code >
+    let g:vc_donot_confirm_cmd = 1
+<
+                                                           *'g:vc_max_logs'*
+This is used as a count of logs retrieved per revision. The default is 50
+In order to increase this value to say 100 at .vimrc >
+    let g:vc_max_logs = 100
+<
+
+                                                           *'g:vc_max_diff'*
+This is used as a count of max number of diffs at given time from VCLog output.
+The default is 2. In order to increase this value to say 3 at .vimrc code >
+    let g:vc_max_diff = 3
+<
+                                                           *'g:vc_max_open_files'*
+This is used as a count of max number of files to open with open all commands
+The default is 10. In order to increase this value to say 12 at .vimrc code >
+    let g:vc_max_open_files = 12
+<
+
+                                                           *'g:vc_ignore_files'*
+This is used to ignore files for svn status, svn list and svn logs
+Default ignore list is  ['\.bin', '\.zip', '\.bz2', '\.tar', '\.gz', 
+                \ '\.egg', '\.pyc', '\.so', '\.git',
+                \ '\.png', '\.gif', '\.jpg', '\.ico', '\.bmp', 
+                \ '\.psd', '\.rpd', '\.pdf']
+   
+To ignore files with extension .class, .obj at .vimrc code >
+    let g:vc_ignore_files = ['\.class', '\.obj']
+<
+                                                           *'g:vc_ignore_repos'*
+The plugin supports svn, git, hg, bzr (-svn, -git, -hg, -bzr). If you are not
+using some of these repositories the support can be disabled by setting 
+g:vc_ignore_repos.  Default is empty and thus all said repos are supported.
+
+Example to disable hg and bzr at .vimrc code  >
+    let g:vc_ignore_repos="-hg,-bzr"
+<
+
+                                                    *'g:vc_prompt_args'*
+This option is used to control accepting arguments for commands from the 
+prompt/filter (browsing, status output). The status line shows ARGS 
+when enabled. when this option is not enabled the operation will not stop
+to accept argments. Example while browsing files the Ctrl-l option brings
+up the log for the selected file. When this option is on, a input prompt will 
+be displayed to accept arguments. NOTE the options are autocompleted. The
+ARGS mode can be toggle using function key F4
+The default is on, to set it to off at .vimrc code >
+    let g:vc_prompt_args = 0
+
+<
+                                                           *'g:vc_fuzzy_search'*
+A fuzzy search at filter prompt is available if vim is compiled with support
+for python. By default this is enabled if python exists. To disable this 
+feature use this variable, 
+Value 1 : enables fuzzy search (default) or Value 0 : disables fuzzy search
+At .vimrc code >
+    let g:vc_fuzzy_search = 0
+<
+
+                                                *'g:vc_fuzzy_search_result_max'*
+A fuzzy search at filter prompt is available if vim is compiled with support for 
+python. Look for |g:vc_fuzzy_search| for more info.  This variable is used to
+display the max results matched from search, the default is 50. 
+At .vimrc code >
+    let g:vc_fuzzy_search_result_max = 60
+<
+
+                                                                *'g:vc_signs'*
+When the files/revisions are marked a sign is placed on the marked/selected lines.
+This feature can be disabled using this opton. The default behavior enables this 
+feature. A value 1 is enable and value 0 is disable. Vim should have signs enabled
+To disable signs, at .vimrc code >
+    let g:vc_signs = 0 
+To enable it (default), at .vimrc code >
+    let g:vc_signs = 1
+<
+                                                           *'g:vc_log_name'*
+Use this variable to set the log file. Should be entire path with logfile
+name, Example /tmp/vc.log, Then can use key F6 to dump the output to
+the said logfile and to dump the messages displayed on console using 'l'
+
+The default is not set. In  .vimrc code >
+    let g:vc_log_name = /path/to/logfile.log
+<
+                                                            *'g:vc_cache_dir'*
+This is the directory where the cached information will be stored. This option
+is required for windows. On MAC/Unix the default location is $HOME/.cache.
+A new directory vc will be created in the specified directory. For more info
+about cache look at |g:vc_browse_cache_all| , |g:vc_browse_cache_max_cnt|
+
+To change the location of the storing the cache info at .vimrc code >
+  let g:vc_cache_dir="/path/to/cache"
+<
+
+NOTE: For windows this option must be specified. Example say we want to specify
+the home directory of user1
+>
+  let g:vc_cache_dir="C:/Users/user1"
+< 
+
+                                           *'g:vc_browse_cache_all'*
+                                           *'g:vc_browse_bookmarks_cache'*
+                                           *'g:vc_browse_repo_cache'*
+                                           *'g:vc_browse_workingcopy_cache'*
+
+Caching of file/directories retrived from the repositoy, working copy or bookmarks
+is not cached by default. Enabling this feature will help increase the speed of
+listing the files during browse operations. Enabling the caching of bookmarks
+enables the bookmarks to be available across all vim sessions. 
+When these options are enabled the retrieved info as said below
+
+|g:vc_browse_repo_cache| - File/Directory names retrieved from SVN while
+                           performing a recursive list of repository
+
+|g:vc_browse_workingcopy_cache| - File/Directory names retrieved from the
+                           local/working copy for recursive listing
+
+|g:vc_browse_bookmarks_cache|  - The bookmarked files/dirs
+
+will be cached at default $HOME.cache.vc directory or the direcory specified
+by |g:vc_cache_dir| option . The number of files stored can be controlled by 
+|g:vc_browse_cache_max_cnt| The |g:vc_browse_cache_all| will enable all 
+caching and hence no need to specify the other cache options mentioned
+
+example at .vimrc to enable all caching >
+  let g:vc_browse_cache_all = 1 
+<
+
+example at .vimrc to enable bookmarks caching only >
+  let g:vc_browse_bookmarks_cache = 1 
+<
+
+                                            *'g:vc_browse_cache_max_cnt'*
+The options is used for caching. This specifies the number of files that 
+can be stored in the cache. Each file contains the listing of each 
+independent directory. The default value is 20. In order to increase this
+at .vimrc code >
+  let g:vc_browse_cache_max_cnt = 50
+<
+
+                                            *'g:vc_browse_repo_max_files_cnt'*
+This option specifies the maximum number of files to be fetched during 
+|VCBrowseRepo| command while recursive. The default value is 1000. If the 
+caching is enabled its bettter to increase this value. To change this value 
+to say 2000 code at .vimrc >
+  let g:vc_browse_repo_max_files_cnt = 2000
+<
+
+                                              *'g:vc_browse_max_files_cnt'*
+This option specifies the maximum number of files to be fetched during 
+|VCBrowseWorkingCopy| command while recursive. The default value is 10000. If the 
+caching is enabled its bettter to increase this value. To change this value 
+to say 20000 code at .vimrc >
+  let g:vc_browse_max_files_cnt = 20000
+<
+
+                                             *'g:vc_autocomplete_svnurls'*
+This option is used to autocomplete urls at the VCBrowseRepo command, Default
+is enabled. To disable at .vimrc code >
+    let g:vc_autocomplete_svnurls = 0
+<
+                                              *'g:vc_window_max_size'*
+This option specifies the maximum size of the vc window the default size is
+25 . To make this display say 30 line at .vimrc >
+  let g:vc_window_max_size = 30
+<
+
+                                              *'g:vc_sticky_on_start'*
+This option makes the sticky as default startup behavior. The default
+is not sticky. At vimrc code >
+  let g:vc_sticky_on_start = 1
+<
+
+                                              *'g:vc_send_soc_command'*
+Only for SVN, VCLog sends a svn log command with --stop-on-copy command to
+get the revision on which the working copy was created. Those who prefer not
+to send this command can set the value to 0. The default value is 1. When 0
+the log status bar will not show the 'S@' revision which
+is the revision at which the working copy was created.  At vimrc code >
+  let g:vc_send_soc_command = 0
+<
+
+                                              *'g:vc_default_repo'*
+Set the default repo, instead of using |VCDefaultrepo| every time at launch.
+At .vimrc code >
+    let g:vc_default_repo = "-svn"
+<
+                                            'g:vc_username'
+                                            'g:vc_password'
+                                            'g:vc_auth_err'
+Please refer to |vc-authentication|
+
+===============================================================================
+MAPPINGS                                                   *vc-mappings*
+
+Description:~
+                                                *'g:vc_allow_leader_mappings'*
+
+Use this option to allow default mappings. The dafault value for this is 0 >
+    let g:vc_allow_leader_mappings = 1
+<
+    With above value set the following are default mappings
+    map <silent> <leader>B :VCBlame<CR>
+    map <silent> <leader>d :VCDiff<CR>
+    map <silent> <leader>df :VCDiff!<CR>
+    map <silent> <leader>s :VCStatus<CR>  
+    map <silent> <leader>su :VCStatus -u<CR>
+    map <silent> <leader>sq :VCStatus -qu<CR>
+    map <silent> <leader>sc :VCStatus .<CR>
+    map <silent> <leader>l :VCLog!<CR>
+    map <silent> <leader>b :VCBrowse<CR>
+    map <silent> <leader>bm :VCBrowse<CR>
+    map <silent> <leader>bw :VCBrowseWorkingCopy<CR>
+    map <silent> <leader>br :VCBrowseRepo<CR>
+    map <silent> <leader>bl :VCBrowseMyList<CR>
+    map <silent> <leader>bb :VCBrowseBookMarks<CR>
+    map <silent> <leader>bf :VCBrowseBuffer<CR>
+    map <silent> <leader>q :diffoff! <CR> :q<CR>
+
+================================================================================
+CUSTOMIZE                                                   *vc-customize*
+
+Description:~
+
+Use the following options to customize some of the colors used in vc.
+Define your own colors example at .vimrc code >
+   let hi MyBlue guifg=#1010f0
+<
+once the color is defined assign it to required options example at .vimrc code >
+    let g:vc_custom_menu_color = 'MyBlue' 
+<
+
+                                                *'g:vc_custom_fuzzy_match_hl'*
+This option is used to color syntax the fuzzy search match highlight
+example at .vimrc code >
+    let g:vc_custom_fuzzy_match_hl = 'Directory' 
+<
+
+                                                    *'g:vc_custom_menu_color'*
+This option is used to color syntax the menu namely the branches/trunks etc.,
+example .vimrc code >
+    let g:vc_custom_menu_color = 'Question' 
+<
+
+                                                    *'g:vc_custom_error_color'*
+This option is used to color syntax the error messages
+example at .vimrc code >
+    let g:vc_custom_error_color = 'Error' 
+<
+                                                    *'g:vc_custom_info_color'*
+This option is used to color syntax the info messages
+example at .vimrc code >
+    let g:vc_custom_info_color = 'Question' 
+<
+
+                                                    *'g:vc_custom_binfolistsep_color'*
+This option is used to color syntax the info seperator messages of browseinfolist
+example at .vimrc code >
+    let g:vc_custom_binfolistsep_color = 'Error' 
+<
+
+
+                                                    *'g:vc_custom_prompt_color'*
+This option is used to color syntax the prompt (filter) 
+example at .vimrc code >
+    let g:vc_custom_prompt_color = 'Title' 
+
+<
+
+                                                *'g:vc_custom_statusbar_title'*
+This option is used to color syntax the status bar title background
+example at .vimrc code >
+    let g:vc_custom_statusbar_title = 'LineNr' 
+<
+                                                
+                                                *'g:vc_custom_statusbar_ops_hl'*
+This option is used to color syntax the status bar supported operations display
+example at .vimrc code >
+    let g:vc_custom_statusbar_ops_hl = 'Character' 
+<
+
+                                            *'g:vc_custom_statusbar_sel_hl'*
+This option is used to color syntax the status bar selected/marked files count.
+Default is Character example at .vimrc code >
+    let g:vc_custom_statusbar_sel_hl = 'Function' 
+<
+                                            *'g:vc_custom_sticky_hl'*
+This option is used to color syntax the STICKY bar
+Default is Function. To change example at .vimrc code >
+    let g:vc_custom_sticky_hl = 'Question' 
+<
+                                            *'g:vc_custom_commit_files_hl'*
+This option is used to color syntax the files listed in the commit log file,
+Default is Directory. To change example at .vimrc code >
+    let g:vc_custom_commit_files_hl = 'Question' 
+<
+                                            *'g:vc_custom_commit_header_hl'*
+This option is used to color syntax the commit log header in  commit log file,
+Default is Comment. To change example at .vimrc code >
+    let g:vc_custom_commit_header_hl = 'Question' 
+<
+
+                                           *'g:vc_custom_op_hl'*
+This option is used to color syntax the supported operations listed in add/commit
+commit log file, Default is Error. To change example at .vimrc code >
+    let g:vc_custom_op_hl = 'Question' 
+<
+
+                                             *'g:vc_custom_repo_header_hl'*
+This option is used to color syntax the repository info listed in the commit log 
+file, Default is Title. To change example at .vimrc code >
+    let g:vc_custom_repo_header_hl = 'Question' 
+<
+
+                                             *'g:vc_custom_date_color'*
+This option is used to color syntax the date info Default is Identifier. 
+To change example at .vimrc code >
+    let g:vc_custom_date_color = 'Question' 
+<
+
+                                             *'g:vc_custom_rev_color'*
+This option is used to color syntax the revision numbers Default is Question. 
+To change example at .vimrc code >
+    let g:vc_custom_rev_color = 'Question' 
+<
+
+                                             *'g:vc_custom_st_modified_hl'*
+                                             *'g:vc_custom_st_na_hl'*
+This option is used to color syntax the status listings of status output, 
+Default is PreProc and Error respectively. To change example at .vimrc code >
+    let g:vc_custom_st_modified_hl = 'Question' 
+    let g:vc_custom_st_na_hl = 'Identifier' 
+<
+
+
+================================================================================
+                                                      *vc-recomended-settings*
+
+RECOMENDED SETTINGS:~
+At .vimrc
+Enable caching, >
+ let g:vc_browse_cache_all = 1
+<
+For windows this option must be specified along with the cache dir >
+ let g:vc_cache_dir="C:/Users/user1"
+<
+Specify location of branches, tags for VCLog >
+ let g:vc_branch_url = ["svn://127.0.0.1/Path/until/branches", "svn://127.0.0.1/Path/until/tags"]
+<
+Specify location of trunk for VCLog >
+ let g:vc_trunk_url = "svn://127.0.0.1/Path/until/trunk";
+<
+================================================================================
+CHANGELOG                                           *vc-changelog*
+
+v1.1~
+  + Initial Revision
+
+================================================================================
+vim:ft=help:et:ts=2:sw=2:sts=2:norl
