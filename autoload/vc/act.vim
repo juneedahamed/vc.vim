@@ -28,7 +28,7 @@ fun! vc#act#blame(argsd)
     let b:vc_repo = a:argsd.meta.repo
     setlocal filetype=vcblame
     setlocal buftype=nofile bufhidden=wipe nobuflisted noswapfile
-    setlocal nowrap nofoldenable nonumber nomodified readonly
+    setlocal nowrap nofoldenable nonumber norelativenumber nomodified readonly
     setlocal scrollbind
     wincmd p " return to previous window
     setlocal scrollbind
