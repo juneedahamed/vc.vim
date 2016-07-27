@@ -8,7 +8,7 @@
 
 fun! vc#syntax#build() "{{{2
     setl nobuflisted
-    setl noswapfile nowrap nonumber cul nocuc nomodeline nomore nospell nolist wfh
+    setl noswapfile nowrap nonumber norelativenumber cul nocuc nomodeline nomore nospell nolist wfh
 	setl fdc=0 fdl=99 tw=0 bt=nofile bh=unload
 
     silent! exe 'resize ' . g:vc_window_max_size 

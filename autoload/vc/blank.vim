@@ -24,7 +24,7 @@ fun! s:setup(cmdsdict) "{{{2
     let jwinnr = bufwinnr(s:bwinname)
     silent! exe  jwinnr < 0 ? 'keepa botright 1new ' .
                 \ fnameescape(s:bwinname) : jwinnr . 'wincmd w'
-    setl nobuflisted noswapfile nowrap nonumber nocuc nomodeline nomore nolist wfh
+    setl nobuflisted noswapfile nowrap nonumber norelativenumber nocuc nomodeline nomore nolist wfh
 	setl tw=0 bt=acwrite bh=wipe
     silent! exe 'resize ' . g:vc_window_max_size 
 	au VCOnWrite BufWriteCmd <buffer> call vc#blank#callonwrite()
