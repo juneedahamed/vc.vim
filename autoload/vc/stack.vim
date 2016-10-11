@@ -21,6 +21,10 @@ fun! vc#stack#clear()
     let s:vc_stack = []
 endf
 
+fun! vc#stack#setnavline()
+    let s:vc_nav_line = getline(".")
+endf
+
 fun! vc#stack#push(...)
     "call add(s:vc_stack, a:000)    
     "Older version of vim 7.1.138 seems to cause
@@ -28,7 +32,7 @@ fun! vc#stack#push(...)
     let elems = []
     if a:0 >= 1 | call add(elems, a:1) | en
     if a:0 >=2 && type(a:2) == type([]) | call extend(elems, a:2) | en
-    let s:vc_nav_line = getline(".")
+    call vc#stack#setnavline()
     call add(s:vc_stack, elems)
 endf
 
@@ -37,8 +41,13 @@ fun! vc#stack#pop(...)
         let movetoline = s:vc_nav_line
         let callnow = s:vc_stack[len(s:vc_stack)-2]
         let s:vc_stack = s:vc_stack[:-3]
+        if bufname('%') == 'vc_bwindow'
+            call vc#blank#closeme()
+            call vc#winj#New({})
+        endif
         call call(callnow[0], callnow[1:])
         call s:findandsetcursor(movetoline)
+        redr
      catch | call vc#utils#dbgmsg("At pop", v:exception) | endt
     retu vc#passed()
 endf

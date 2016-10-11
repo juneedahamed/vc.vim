@@ -56,8 +56,21 @@ fun! s:setup(cmdsdict) "{{{2
 
     exe 'syn match Operations /^VC\: Operations \: .*/'
     exec 'hi link Operations ' . g:vc_custom_op_hl
+
+    call s:noparsesetup()
 endf
 "2}}}
+
+fun! s:noparsesetup()
+    exec 'syn match DEL /^\-.*$/'
+    exec 'hi link DEL Error'
+
+    exec 'syn match VCADD /^+.*/'
+    exec 'hi link VCADD Identifier'
+    
+    exec 'syn match VCNOPARSEOP /^diff.*/'
+    exec 'hi link VCNOPARSEOP Title'
+endf
 
 fun! vc#blank#onwrite(callback, argsd) "{{{2
     unlet! b:onwritecallbackargsd

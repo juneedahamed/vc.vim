@@ -16,7 +16,8 @@ fun! vc#log#logops() "{{{2
         \ "\<C-a>"    :{"bop":"<c-a>", "fn":'vc#log#affectedfiles'},
         \ "\<C-i>"    :{"bop":"<c-i>", "fn":'vc#gopshdlr#info'},
         \ "\<C-y>"    :{"bop":"<c-y>", "fn":'vc#gopshdlr#cmd'},
-        \ "\<C-t>"     :{"bop":"<c-t>", "fn":'vc#stack#top'},
+        \ "\<C-t>"    :{"bop":"<c-t>", "fn":'vc#stack#top'},
+        \ "\<C-k>"    :{"bop":"<c-k>", "fn":'vc#gopshdlr#changes'},
         \ g:vc_selkey : {"bop":g:vc_selkey_buf, "fn":'vc#gopshdlr#select'},
         \ }
 endf

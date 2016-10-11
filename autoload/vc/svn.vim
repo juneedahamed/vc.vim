@@ -626,6 +626,25 @@ fun! vc#svn#logs(argsd) "{{{2
 endf
 "2}}}
 
+fun! vc#svn#diffcmdops(argsd) "{{{2
+    retu ["-vcnoparse",]
+endf
+"2}}}
+
+fun! vc#svn#diff_vcnoparse(argsd) "{{{2
+    if a:argsd.revision != ''
+        retu "svn diff " . a:argsd.cargs . ' -c' . a:argsd.revision . ' ' . a:argsd.target
+    else
+        retu "svn diff " . a:argsd.cargs . ' ' . a:argsd.target
+    endif
+endf
+"2}}}
+
+fun! vc#svn#changes(argsd) "{{{2
+    retu 'svn diff --non-interactive -c ' . a:argsd.revision . ' ' . a:argsd.meta.fpath
+endf
+"2}}}
+
 fun! vc#svn#diff(argsd) "{{{2
     let diffwith = ""
     let url = vc#svn#url(a:argsd.meta.entity)
@@ -655,6 +674,13 @@ fun! vc#svn#status(argsd) "{{{2
 endf
 "2}}}
 
+fun! vc#svn#status_vcnoparse(argsd) "{{{2
+    let target = get(a:argsd.meta, 'entity', '.')
+    let cargs = get(a:argsd, 'cargs', '')
+    retu 'svn st --non-interactive ' . cargs . ' ' . target
+endf
+"2}}}
+
 fun! vc#svn#summary(cmd) "{{{2
     let shellout = vc#utils#execshellcmd(a:cmd)
     let shelloutlist = split(shellout, '\n')
@@ -662,7 +688,7 @@ fun! vc#svn#summary(cmd) "{{{2
     let statuslist = []
     for line in shelloutlist
         let tokens = split(line)
-        if len(matchstr(tokens[len(tokens)-1], g:p_ign_fpat)) != 0 | cont | en
+        if len(tokens) == 0 || len(matchstr(tokens[len(tokens)-1], g:p_ign_fpat)) != 0 | cont | en
         if matchstr(line, "Status against") != "" | cont | en
         let statusentryd = {}
         let statusentryd.modtype = tokens[0]
@@ -737,9 +763,10 @@ fun! s:matchshelloutput(cmd, patt) "{{{2
 endf
 "2}}}
 
-fun! vc#svn#revertcmd(argsd) 
+fun! vc#svn#revertcmd(argsd) "{{{2
     retu "svn revert " . a:argsd.cargs . " ". a:argsd.meta.fpath
 endf
+"2}}}
 
 fun! vc#svn#diffcmd(argsd)  "{{{2
     let arevision = get(a:argsd, 'revision', '')
@@ -772,7 +799,7 @@ endf
 "2}}}
 
 fun! vc#svn#statuscmdops(argsd) "{{{2
-    retu ["-u", "-q", "--no-ignore", "--ignore-externals"]
+    retu ["-u", "-q", "--no-ignore", "--ignore-externals", "-vcnoparse"]
 endf
 "2}}}
 

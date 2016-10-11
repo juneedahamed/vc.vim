@@ -211,6 +211,16 @@ fun! s:logrtrv(cmd)
 endf
 "2}}}
 
+fun! vc#git#changes(argsd) "{{{2
+    retu s:precmd(a:argsd.meta) . 'diff ' . a:argsd.revision . ' ' . a:argsd.meta.fpath
+endf
+"2}}}
+
+fun! vc#git#diff_vcnoparse(argsd) "{{{2
+    retu s:precmd(a:argsd.meta) . 'diff ' . a:argsd.cargs . ' ' . a:argsd.revision . ' -- ' . a:argsd.target
+endf
+"2}}}
+
 fun! vc#git#diff(argsd) "{{{2
     let logargsd = {"meta": a:argsd.meta, "cargs": "-n " . g:vc_max_logs}
     call vc#git#logs(logargsd)
@@ -233,7 +243,12 @@ fun! vc#git#status(argsd) "{{{2
     let [entries, cmd] = vc#utils#statussummary(cmd, a:argsd.meta.wrd)
     retu [cmd, entries]
 endf
+"2}}}
 
+fun! vc#git#status_vcnoparse(argsd) "{{{2
+    let cargs = get(a:argsd, 'cargs', '')
+    retu s:precmd(a:argsd.meta) . "status " . cargs . " " . a:argsd.meta.fpath 
+endf
 "2}}}
 
 fun! vc#git#affectedfiles(meta, revision) "{{{2
@@ -355,7 +370,7 @@ endf
 "2}}}
 
 fun! vc#git#statuscmdops(argsd) "{{{2
-    retu ["--untracked-files", "--ignored",]
+    retu ["--untracked-files", "--ignored", "-vcnoparse"]
 endf
 "2}}}
 
@@ -365,7 +380,7 @@ endf
 "2}}}
 
 fun! vc#git#diffcmdops(argsd) "{{{2
-    retu ["HEAD",]
+    retu ["HEAD", "-vcnoparse"]
 endf
 "2}}}
 

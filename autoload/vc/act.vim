@@ -36,6 +36,30 @@ fun! vc#act#blame(argsd)
     retu vc#passed()
 endf
 
+fun! vc#act#handleNoParseCmd(argsd, fncode)
+    try
+        let a:argsd.cmd = vc#repos#call(a:argsd.meta.repo, a:fncode, a:argsd)
+        let addops = get(a:argsd, 'addops', 0)
+        let response = system(a:argsd.cmd)
+        let [opsd, help] = [{}, ""]
+        if addops
+            let opsd = {"\<C-u>"    :{"bop":"<c-u>", "fn":'vc#stack#pop'},}
+            let help = "C-u:up"
+        endif
+        call vc#blank#win(opsd)
+        setl modifiable
+        sil! exe '%d _ '
+        sil! put=response
+        let &l:stl = vc#utils#stl(a:argsd.op, help)
+        sil! exec 1
+	    setlocal nomodified | redr
+        retu vc#fltrclearandexit()
+    catch
+        call vc#utils#showerr(v:exception)
+        retu vc#failed()
+    endtry
+endf
+
 fun! vc#act#diff(argsd)
     let repo = a:argsd.meta.repo
     let arevision = a:argsd.revision

@@ -110,10 +110,13 @@ COMMANDS                                                         *vc-commands*
     <-q|-u>             : Subversion only
 
     <--ignored|--untracked-files> :  git only
-    <--all|--modified|--added|
-      --removed|--deleted|--clean|--ignored"> : HG only
+    <--all | --modified | --added |
+      --removed | --deleted | --clean | --ignored"> : HG only
 
-   <-svn|-git|
+    <-vcnoparse>        : VC specific when provided will not try parsing
+                          git and svn only
+
+    <-svn | -git|
      -hg|-bzr>  : Force plugin to identify a repo as default, see |VCDefaultrepo|
 
   Key-Mappings:~
@@ -149,7 +152,10 @@ COMMANDS                                                         *vc-commands*
 
   Arguments:~
     <-revision> : Diff with the specified revision for the file in buffer
-   <-svn|-git|
+    <-vcnoparse>: When passed will display the diff output without parsing
+                  pass the revision to diff with the required revision by
+                  default diff to the latest revision 
+    <-svn|-git|
      -hg|-bzr>  : Force plugin to identify a repo as default, see |VCDefaultrepo|
     !           : forces diff to start with the revision from the trunk/branch for
                   subversion
@@ -180,11 +186,16 @@ COMMANDS                                                         *vc-commands*
     Diff With a specific revision as follows
     SVN 
     :VCDiff -revision r450
+    :VCDiff -vcnoparse -revision r450
+    :VCDiff -vcnoparse -revision r450 .
+        The . redirects to the current working directory
     
     Git 
     :VCDiff -revision d8a7709
     :VCDiff -revision HEAD^
     :VCDiff -revision HEAD^^
+    :VCDiff -vcnoparse -revision 6930
+    :VCDiff -vcnoparse -revision 6930 .
     
     HG (Mercurial) 
     :VCDiff -revision 16627
@@ -340,6 +351,8 @@ COMMANDS                                                         *vc-commands*
                  SVN repo only
   <Ctrl-p>     : SVN Diff :PREV with selected revision (most useful with dirs)
                  SVN repo only
+  <Ctrl-k>     : SVN, GIT, shows changes for the specified revision without
+                  parsing in a buffer
 
   Global-Options:~
 
@@ -1236,6 +1249,14 @@ CHANGELOG                                           *vc-changelog*
 
 v1.1~
   + Initial Revision
+
+v1.2~
+  + Added option -vcnoparse for VCStatus, VCDiff, 
+        see example usage in :help VCDiff
+  + Added Ctrl-k key to the output of log to show the changes in an empty
+buffer 
+     Execute VCLog . and the press Ctrl-k on any revision
+     Ctrl-u is mapped as up/back menu key
 
 ================================================================================
 vim:ft=help:et:ts=2:sw=2:sts=2:norl

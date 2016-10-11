@@ -30,6 +30,16 @@ fun! vc#status#Status(...)   "{{{2
         let disectd = vc#argsdisectlst(a:000, "onlydirs")
         let meta = vc#repos#meta(disectd.target, disectd.forcerepo)
         let argsd = {'meta':meta, 'cargs' : disectd.cargs }
+        if disectd.vcnoparse
+            let argsd = {
+                        \ "meta": meta, 
+                        \ "revision": disectd.revision,
+                        \ "cargs": disectd.cargs,
+                        \ "target": disectd.target,
+                        \ "op": "Status",
+                        \ }
+            retu vc#act#handleNoParseCmd(argsd, 'status.vcnoparse')
+        endif
         call vc#status#_status('vc#winj#populateJWindow', argsd)
     catch
         call vc#utils#dbgmsg("Exception at vc#status#Status", v:exception)

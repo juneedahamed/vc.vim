@@ -72,6 +72,24 @@ fun! vc#gopshdlr#openfltrdfiles(argsd) "{{{2
 endf
 "2}}}
 
+fun! vc#gopshdlr#changes(argsd) "{{{2
+    let [adict, akey, aline, aopt] = [a:argsd.dict, a:argsd.key, a:argsd.line, a:argsd.opt]
+    if akey == 'err' | retu vc#nofltrclear() | en
+    if has_key(adict, 'logd') && has_key(adict.logd.contents, akey)
+        let revision = adict.logd.contents[akey].revision
+        let new_argsd = {
+                    \ 'meta': adict.meta,
+                    \ 'revision': revision,
+                    \ 'cargs': '',
+                    \ 'op': 'Diff: ' . revision,
+                    \ 'addops': 1,
+                    \ }
+        call vc#stack#setnavline()
+        retu vc#act#handleNoParseCmd(new_argsd, 'diff.changes')
+    endif
+endf
+"2}}}
+
 fun! vc#gopshdlr#select(argsd) "{{{2
     "select line for log, browse and status dict
     let [adict, akey, aline, aopt] = [a:argsd.dict, a:argsd.key,

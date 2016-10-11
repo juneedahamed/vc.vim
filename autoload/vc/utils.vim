@@ -100,7 +100,7 @@ endf
 
 fun! vc#utils#bufrelpath() "{{{2
     let target = expand('%')
-    if target ==# ''
+    if target ==# '' || target ==# 'vc_bwindow'
         throw 'Error No file in buffer'
     endif
     retu vc#utils#fnameescape(target)
@@ -774,6 +774,7 @@ let s:dscrd = {
             \ "\<C-v>":   "Ctrl-v:Vertical split the selected file",
             \ "\<C-d>":   "Ctrl-d:Opens selected file/revision in diff mode",
             \ "\<C-l>":   "Ctrl-l:Displays logs for the selected file",
+            \ "\<C-k>":   "Ctrl-k:Shows raw changes (diff cmd) for log output",
             \ "\<C-i>":   "Ctrl-i:Shows VCInfo",
             \ "\<C-w>":   "Ctrl-w:Wrap!, Toggle wrap", 
             \ "\<C-y>":   "Ctrl-y:Displays the command used",

@@ -25,13 +25,23 @@ endf
 fun! vc#Diff(bang, showerr, ...) "{{{2
     try
         call vc#init()
+        let disectd = vc#argsdisectlst(a:000, "all")
+        let meta = vc#repos#meta(disectd.target, disectd.forcerepo)
+        if disectd.vcnoparse
+            let argsd = {
+                        \ "meta": meta, 
+                        \ "revision": disectd.revision,
+                        \ "cargs": disectd.cargs,
+                        \ "target": disectd.target,
+                        \ "op": "Diff",
+                        \ }
+            retu vc#act#handleNoParseCmd(argsd, 'diff.vcnoparse')
+        endif
         if exists('b:vc_path') && vc#utils#localFS(b:vc_path)
             let target = b:vc_path
         else
             let target = vc#utils#bufrelpath()
         en
-        let disectd = vc#argsdisectlst(a:000, "onlydirs")
-        let meta = vc#repos#meta(target, disectd.forcerepo)
         let argsd = {"meta": meta, "bang":a:bang, "revision": disectd.revision}
         call vc#repos#call(meta.repo, 'diff', argsd)
         retu vc#passed()
@@ -40,7 +50,7 @@ fun! vc#Diff(bang, showerr, ...) "{{{2
         retu vc#failed()
     finally
         unlet! argsd
-        unlet! metad
+        unlet! meta
     endtry
 endf
 "2}}}
@@ -56,7 +66,7 @@ fun! vc#Blame(...)   "{{{2
         call vc#utils#showerrJWindow("Blame", v:exception)
     finally
         unlet! argsd
-        unlet! metad
+        unlet! meta
     endtry
 endf
 "2}}}
@@ -73,7 +83,7 @@ fun! vc#Info(...)  "{{{2
         call vc#utils#showerrJWindow("Info", v:exception)
     finally
         unlet! argsd
-        unlet! metad
+        unlet! meta
     endtry
 endf
 "2}}}
@@ -96,7 +106,7 @@ fun! vc#Revert(bang, ...)  "{{{2
         call vc#utils#showerrJWindow("Revert", v:exception)
     finally
         unlet! argsd
-        unlet! metad
+        unlet! meta
     endtry
 endf
 "2}}}
@@ -160,7 +170,7 @@ fun! vc#PushPullFetch(vccmd, ...) "{{{2
         call vc#utils#showerr("Failed " . v:exception)
     finally
         unlet! argsd
-        unlet! metad
+        unlet! meta
     endtry
 endf
 "2}}}
@@ -287,6 +297,7 @@ endf
 
 fun! vc#argsdisectlst(arglst, globpath)
     let arglst = copy(a:arglst)
+    let vcnoparse = vc#argsremoveparam(arglst, "-vcnoparse", 0, 0)
     let forcerepo = vc#argsremoveparam(arglst, vc#repos#repopatt(), 1, 0)
     let forcerepo = forcerepo == "" && exists('b:vc_repo') ? b:vc_repo : forcerepo
     let revision = vc#argsremoveparam(arglst, "-revision", 0, 1)
@@ -307,7 +318,8 @@ fun! vc#argsdisectlst(arglst, globpath)
                 \ "forcerepo": forcerepo, 
                 \ "target": vc#utils#fnameescape(target),
                 \ "cargs": cargs, 
-                \ "revision": revision 
+                \ "revision": revision,
+                \ "vcnoparse": vcnoparse != "" ? 1 : 0,
                 \}
 endf
 
