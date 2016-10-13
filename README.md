@@ -245,3 +245,26 @@ Run from vim commandline
 `:VCBrowseMyList`
 `:VCBrowseBuffer`
 **`:help vc`**
+
+##Screen shots
+
+![vcbrowse1][1]
+
+
+![vcbrowse_filtered][2]
+
+
+![vccommit][3]
+
+
+![vclog][4]
+
+
+
+   
+[1]: http://i.imgur.com/sDE3uRu.png
+[2]: http://i.imgur.com/LzsrXZK.png
+[3]: http://i.imgur.com/QtBQgdD.png
+[4]: http://i.imgur.com/N49e92X.png
+
+
