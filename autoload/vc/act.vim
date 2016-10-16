@@ -86,7 +86,7 @@ fun! vc#act#diffme(repo, revision, path, force)
         let fname = substitute(fname, '\~', "", "")
     endif
 
-    diffthis | exec 'vnew! ' vc#utils#fnameescape(fname)
+    diffthis | exec 'keepalt vnew! ' vc#utils#fnameescape(fname)
     exec cmd |  diffthis
     retu s:diffsetup(a:repo, islocal, a:revision, a:path, a:force, fname, cmd)
 endf
