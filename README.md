@@ -6,9 +6,6 @@ Autocompletes command options, file(s), dir(s), repo url(s)
 
 <b>NOTE</b>: svnj.vim users, replace all settings from svnj_ to vc_ 
 
-
-##Screen shots
-
 ![Animation][1]
    
 [1]: http://i.imgur.com/i5B696t.gif?1
