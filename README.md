@@ -7,6 +7,12 @@ Autocompletes command options, file(s), dir(s), repo url(s)
 <b>NOTE</b>: svnj.vim users, replace all settings from svnj_ to vc_ 
 
 
+##Screen shots
+
+![Animation][1]
+   
+[1]: http://i.imgur.com/i5B696t.gif?1
+
 ##Supported Operations
 
 * <b>VCAdd[!] [Arguments] </b>
@@ -246,25 +252,6 @@ Run from vim commandline
 `:VCBrowseBuffer`
 **`:help vc`**
 
-##Screen shots
 
-![vcbrowse1][1]
-
-
-![vcbrowse_filtered][2]
-
-
-![vccommit][3]
-
-
-![vclog][4]
-
-
-
-   
-[1]: http://i.imgur.com/sDE3uRu.png
-[2]: http://i.imgur.com/LzsrXZK.png
-[3]: http://i.imgur.com/QtBQgdD.png
-[4]: http://i.imgur.com/N49e92X.png
 
 
