@@ -94,14 +94,20 @@ endf
 fun! s:diffsetup(repo, islocal, revision, path, force, fname, cmd)
     let filetype=&ft
     exe 'silent! com! GoVC call vc#home()'
-    exe 'map <buffer> <silent> <c-q>' '<esc>:diffoff!<cr>:bd!<cr>:GoVC<cr>'
+    if has('gui_running')
+        exe 'map <buffer> <silent> <c-q>' '<esc>:diffoff!<cr>:bd!<cr>:GoVC<cr>'
+        let quithelp="Ctrl-q: Quit"
+    else
+        exe 'map <buffer> <silent> <c-x>' '<esc>:diffoff!<cr>:bd!<cr>:GoVC<cr>'
+        let quithelp="Ctrl-x: Quit"
+    endif
 
     exe 'map <buffer> <silent> <c-n>' printf("<esc>:call vc#act#diffcycle(\"%s\", 0, 'bn!')<cr>", a:force)
     exe 'map <buffer> <silent> <c-p>' printf("<esc>:call vc#act#diffcycle(\"%s\", 0, 'bp!')<cr>", a:force)
     if !a:islocal | exe "setl bt=nofile bh=wipe nobl noswf ro ft=" . filetype | en
 
     let opsdict = {
-                \ "c-q": {"dscr": "Ctrl-q: Quit"},
+                \ "c-q": {"dscr": quithelp},
                 \ "c-n": {"dscr": "Ctrl-n: Diff with next buffer"},
                 \ "c-p": {"dscr": "Ctrl-p: Diff with previous buffer"},
                 \ }
