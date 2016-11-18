@@ -115,13 +115,23 @@ fun! s:diffsetup(repo, islocal, revision, path, force, fname, cmd)
     let [newrev, olderrev] = s:newandoldrevisions(a:revision)
     if olderrev != ""
         exe 'com! -buffer VCDiffOld' printf("call vc#winj#close()|diffoff!|bd!|call vc#act#diffme('%s','%s','%s','%s')", a:repo, olderrev, a:path, a:force)
-        exe 'map <buffer> <silent> <c-down> <esc> :VCDiffOld<cr>'
-        let opsdict["C-Down"] = {"dscr": "Ctrl-Down Arrow or VCDiffOld: Diff with revision " . olderrev}
+    	if has('gui_running')
+			exe 'map <buffer> <silent> <c-down> <esc> :VCDiffOld<cr>'
+			let opsdict["C-Down"] = {"dscr": "Ctrl-Down Arrow or VCDiffOld: Diff with revision " . olderrev}
+		else
+			exe 'map <buffer> <silent> <c-j> <esc> :VCDiffOld<cr>'
+			let opsdict["c-j"] = {"dscr": "Ctrl-j or VCDiffOld: Diff with revision " . olderrev}
+		endif
     endif
     if newrev != ""
         exe 'command! -buffer VCDiffNew' printf("call vc#winj#close()|diffoff!|bd!|call vc#act#diffme('%s','%s','%s','%s')", a:repo, newrev, a:path, a:force)
-        exe 'map <buffer> <silent> <c-up> <esc> :VCDiffNew<cr>'
-        let opsdict["c-Up"] = {"dscr": "Ctrl-Up Arrow or VCDiffNew: Diff with revision " . newrev}
+    	if has('gui_running')
+			exe 'map <buffer> <silent> <c-up> <esc> :VCDiffNew<cr>'
+            let opsdict["c-Up"] = {"dscr": "Ctrl-Up Arrow or VCDiffNew: Diff with revision " . newrev}
+		else
+			exe 'map <buffer> <silent> <c-k> <esc> :VCDiffNew<cr>'
+			let opsdict["c-k"] = {"dscr": "Ctrl-k or VCDiffNew: Diff with revision " . newrev}
+		endif
     endif
 
     if a:revision != ""
