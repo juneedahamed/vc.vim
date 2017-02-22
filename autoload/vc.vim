@@ -306,17 +306,19 @@ fun! vc#argsdisectlst(arglst, globpath)
     if target == "" 
         let lasttoken = len(arglst) > 0 ? arglst[-1] : ""
         if( lasttoken != "" && vc#utils#localFS(lasttoken))
-            let target = lasttoken 
+            let target = vc#utils#fnameescape(lasttoken)
             let arglst[-1] = ""
         else
             let target = vc#maketarget(a:globpath)
         endif
+    else
+        let target = vc#utils#fnameescape(lasttoken)
     endif
     let cargs = join(arglst, " ")
 
     retu { 
                 \ "forcerepo": forcerepo, 
-                \ "target": vc#utils#fnameescape(target),
+                \ "target": target,
                 \ "cargs": cargs, 
                 \ "revision": revision,
                 \ "vcnoparse": vcnoparse != "" ? 1 : 0,
@@ -386,7 +388,9 @@ fun! vc#maketarget(globpath)
     let target = "."
     try
         if a:globpath != "onlydirs" && exists('b:vc_path') | retu b:vc_path | en
-        let target = a:globpath != "onlydirs" ? vc#utils#bufrelpath() : target
+        if a:globpath != "onlydirs"
+            retu vc#utils#bufrelpath() 
+        endif
     catch |  endtry
     let target = a:globpath == "onlyfiles" && target == "." ? "" : target
     retu vc#utils#fnameescape(target)

@@ -108,6 +108,7 @@ endf
 "2}}}
 
 fun! vc#utils#fnameescape(path) "{{{2
+    "let x = input("fnameescape There" . a:path)
     let path = expand(a:path)
     retu  path == "" ? a:path : fnameescape(path)
 endf

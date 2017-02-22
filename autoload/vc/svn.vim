@@ -40,10 +40,10 @@ endf
 fun! vc#svn#meta(entity) "{{{2
     let metad = {}
     let metad.repo = "-svn"
-    let metad.entity = vc#utils#fnameescape(a:entity)
+    let metad.entity = a:entity
 
     let metad.isdir = vc#svn#issvndir(metad.entity)
-    let metad.fpath = vc#utils#fnameescape(a:entity == "" ? getcwd() : a:entity)
+    let metad.fpath = a:entity == "" ? vc#utils#fnameescape(getcwd()) : a:entity
     let metad.wrd = vc#svn#workingroot()
     try
         let metad.repoUrl = vc#svn#url(metad.entity)
