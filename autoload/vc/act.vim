@@ -88,6 +88,10 @@ fun! vc#act#diffme(repo, revision, path, force)
 
     diffthis | exec 'keepalt vnew! ' vc#utils#fnameescape(fname)
     exec cmd |  diffthis
+    call diffusable#diff_with_partner(winnr('#'))
+    wincmd p
+    call diffusable#diff_with_partner(winnr('#'))
+    wincmd p
     retu s:diffsetup(a:repo, islocal, a:revision, a:path, a:force, fname, cmd)
 endf
 
