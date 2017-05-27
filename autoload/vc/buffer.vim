@@ -30,15 +30,30 @@ fun! vc#buffer#close(argsd) "{{{2
     let [adict, akey, aline] = [a:argsd.dict, a:argsd.key, a:argsd.line]
     let curbufname = a:argsd.opt[0]
     if has_key(adict, 'browsed') 
-        let buffile = vc#utils#joinpath(adict.bparent, aline)
         try
-            if a:argsd.opt[0] == buffile | retu | en
-            exec "bd " fnameescape(buffile)
+            for [key, sdict] in items(vc#select#dict())
+                let curfile = vc#utils#joinpath(adict.bparent, sdict.path)
+                if curfile != curbufname 
+                    call vc#buffer#delete(curfile)
+                endif
+            endfor
+
+            let buffile = vc#utils#joinpath(adict.bparent, aline)
+            if buffile != curbufname
+                call vc#buffer#delete(buffile)
+            endif
+            call vc#select#clear()
             call vc#buffer#_browse('vc#winj#populate', curbufname)
         catch 
             call vc#utils#dbgmsg("At vc#buffer#close", v:exception) 
         endtry
     endif
+endf
+
+fun! vc#buffer#delete(name)
+    try
+        exec "bd " fnameescape(a:name)
+    catch|endtry
 endf
 "2}}}
 
