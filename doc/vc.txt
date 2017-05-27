@@ -1053,6 +1053,13 @@ This option is used to autocomplete urls at the VCBrowseRepo command, Default
 is enabled. To disable at .vimrc code >
     let g:vc_autocomplete_svnurls = 0
 <
+
+                                             *'g:vc_commit_allow_blank_lines'*
+This option allows blank lines inbetween the comments, Default strips of the 
+blank lines. When blank lines are available as comments VCLog will not show
+comments after the first blank line. To allow blank lines at .vimrc code >
+    let g:vc_commit_allow_blank_lines = 1
+<
                                               *'g:vc_window_max_size'*
 This option specifies the maximum size of the vc window the default size is
 25 . To make this display say 30 line at .vimrc >

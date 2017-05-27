@@ -58,6 +58,7 @@ fun! s:custom()
     let g:vc_donot_confirm_cmd = get(g:, 'vc_donot_confirm_cmd', 0)
     let g:vc_prompt_args = get(g:, 'vc_prompt_args', 1)
     let g:vc_autocomplete_svnurls = get(g:, 'vc_autocomplete_svnurls', 1)
+    let g:vc_commit_allow_blank_lines = get(g:, 'vc_commit_allow_blank_lines', 0)
 endf
 "3}}}
 

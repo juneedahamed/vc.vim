@@ -98,13 +98,15 @@ endf
 fun! vc#commit#parseclog() "{{{2
     let [cfiles, comments] = [[], []]
 
-    for line in getline(1, line('$'))
-        let line = vc#utils#strip(line)
+    for theline in getline(1, line('$'))
+        let line = vc#utils#strip(theline)
         if len(line) > 0 && matchstr(line, '^VC:') == ""
             call add(comments , line) 
         elseif matchstr(line, '^VC:+') != ""
             let line = vc#utils#strip(substitute(line, '^VC:+', "", ""))
             if index(cfiles, line) < 0 | call add(cfiles, line) | en
+        elseif len(line) == 0 && len(comments) > 0 && g:vc_commit_allow_blank_lines == 1
+            call add(comments , theline) 
         endif
     endfor
     retu [cfiles, comments]
