@@ -1095,9 +1095,17 @@ Please refer to |vc-authentication|
 MAPPINGS                                                   *vc-mappings*
 
 Description:~
+                                                *'g:no_vc_maps'*
+
+Use this option to turn off all mappings. The default value for this is 0. >
+    let g:no_vc_maps = 1
+<
+When enabled, the + mapping to find the current word within the repo is
+disabled.
+
                                                 *'g:vc_allow_leader_mappings'*
 
-Use this option to allow default mappings. The dafault value for this is 0 >
+Use this option to allow default mappings. The default value for this is 0. >
     let g:vc_allow_leader_mappings = 1
 <
     With above value set the following are default mappings
