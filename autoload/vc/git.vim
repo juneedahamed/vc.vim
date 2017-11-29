@@ -370,7 +370,7 @@ endf
 "2}}}
 
 fun! vc#git#statuscmdops(argsd) "{{{2
-    retu ["--untracked-files", "--ignored", "-vcnoparse"]
+    retu ["--untracked-files", "--ignored", "-vcnoparse", "-uno"]
 endf
 "2}}}
 
