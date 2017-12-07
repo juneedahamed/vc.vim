@@ -97,8 +97,10 @@ function! vc#EnableBufferSetup(...)
 endf
 
 fun! vc#BuffersSetup(...) "{{{2
+    let [curwinnr, jwinnr] = [winnr(), bufwinnr('vc_window')]
+    if jwinnr > 0 && curwinnr == jwinnr | retu | en
 	if exists('b:vc_file_meta') | retu | en
-    let target = vc#utils#fnameescape(expand('%'))
+    let target = vc#utils#fnameescape(expand('<afile>'))
     call vc#repos#meta(target, "")
 endf
 "2}}}
