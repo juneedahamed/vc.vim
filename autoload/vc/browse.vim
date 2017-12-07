@@ -471,6 +471,10 @@ fun! vc#browse#_browse(args)
         let bdict.bparent = entity
         let bdict.title = fnamemodify(bdict.meta.fpath, ':.')
         if bdict.title == "" | let bdict.title = bdict.meta.fpath | en
+        if has_key(bdict.meta, "branch") && bdict.meta.branch != ""
+            let bdict.title = "[" . bdict.meta.branch . "] " . bdict.title
+        endif
+
         let bdict.brecursive = a:args.recursive
         let bdict.forcerepo = a:args.forcerepo
 

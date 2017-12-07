@@ -219,7 +219,6 @@ endf
 "2}}}
 
 fun! vc#gopshdlr#diffinfo(repo, revision, entity) "{{{2
-    "let info = exists("b:vc_cmd") ? "\nThe command used : " . b:vc_cmd : "\n"
     let info = ""
     if exists("b:vc_revision") && vc#repos#hasop(a:repo, 'diff.infocmds')[0] == vc#passed()
         let meta = vc#repos#meta(a:entity, a:repo)

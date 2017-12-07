@@ -52,7 +52,8 @@ fun! vc#svn#meta(entity) "{{{2
     endtry
 
     let metad.local = vc#utils#localFS(a:entity)
-    let metad.branch = ""
+    let metad.branch = vc#svn#curbranchname(metad)
+    let b:vc_file_meta = metad
     retu metad
 endf
 "2}}}
@@ -98,6 +99,19 @@ endf
 
 fun! vc#svn#isbranch(URL) "{{{2
     retu len(filter(copy(g:p_burls), 'stridx(a:URL, v:val,0) == 0')) > 0
+endf
+"2}}}
+
+fun! vc#svn#curbranchname(meta) "{{{2
+    try
+        let tokens = split(a:meta.repoUrl, "/")
+        for i in range(len(tokens)-2, 0, -1)
+            if len(matchstr(tokens[i], 'branch\|branches\|tags\|trunk')) > 0
+                retu tokens[i+1]
+            endif
+        endfor
+    catch|endt
+    retu ""
 endf
 "2}}}
 
@@ -545,6 +559,13 @@ endf
 
 fun! vc#svn#logtitle(argsd)  "{{{2
     let [title, soc_rev, cache] = [a:argsd.meta.entity, "", get(a:argsd, "cache", 0)]
+
+    try
+        if len(a:argsd.meta.branch) > 0
+            let title = "[". a:argsd.meta.branch . "] " . title
+        endif
+    catch | endt
+
     try 
         let path =  a:argsd.meta.repoUrl != "" ? a:argsd.meta.repoUrl : a:argsd.meta.fpath
         if cache == 1 && vc#caop#cachedlog("svn", path) 

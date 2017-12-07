@@ -139,12 +139,10 @@ fun! s:diffsetup(repo, islocal, revision, path, force, fname, cmd)
         let opsdict["c-i"] = {"dscr": "Ctrl-i: Info"}
     endif
 
-    let b:vc_cmd = a:cmd
     let b:vc_opsdict = opsdict
     let b:vc_path = a:path
     let b:vc_revision = a:revision
     let b:vc_repo = a:repo
-    let b:vc_bufname = a:fname
     exe 'map <buffer> <silent> <c-h> <esc> :call vc#act#buffhelp()<cr>'
     let result = s:endop(0)
     let &l:stl = vc#utils#stl(a:fname, "Ctrl-h:Help")
@@ -174,6 +172,7 @@ fun! vc#act#efile(argsd)
 
     try
         let [revision, fname] = vc#repos#call(repo, 'frmtrevfname', a:argsd)
+        call vc#utils#showconsolemsg(fname, 0)
         if revision != "" | let fname = "_".fname | en
 
         if filereadable(vc#utils#expand(fname)) || buflisted(vc#utils#expand(fname))
@@ -185,10 +184,8 @@ fun! vc#act#efile(argsd)
             exe "setl bt=nofile ro"
         endif
         if has_key(a:argsd, "meta") && has_key(a:argsd, "path")
-            let b:vc_argsd = a:argsd
             let b:vc_repo = a:argsd.meta.repo
             let b:vc_path = a:argsd.path
-            let b:vc_bufname = fname
             if revision != "" && b:vc_path != ""
                 exe 'com! -buffer VCDiffLocal' printf("diffoff!|call vc#act#diffme('%s','%s','%s','%s')", b:vc_repo, "", b:vc_path, "")
                 exe 'map <buffer> <silent> <c-D> <esc> :VCDiffLocal<cr>'
@@ -229,7 +226,6 @@ fun! vc#act#vs(argsd)
         silent! exe 'vsplit ' vc#utils#fnameescape(fname) | exe "%!" . cmd
         exe "setl bt=nofile ro"
     endif
-    let b:vc_argsd = a:argsd
     retu s:endop(1)
 endf
 

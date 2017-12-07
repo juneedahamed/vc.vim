@@ -128,8 +128,10 @@ fun! vc#git#meta(entity) "{{{2
     let metad.rbranch = ""
     let metad.wrd = wrd
     let metad.gitdir = vc#utils#joinpath(wrd, ".git")
+    let metad.branch = vc#git#curbranchname(metad)
     "Path with respect to repo
     let metad.repoUrl = vc#utils#fnameescape(substitute(expand(fullpath), expand(wrd), '', ''))
+    let b:vc_file_meta = metad
     retu metad
 endf
 
@@ -569,7 +571,6 @@ endf
 
 fun! vc#git#browseentries(path, argsd)   "{{{2
     if a:argsd.meta.local 
-        let a:argsd.title = s:fmtdbranchname(a:argsd.meta) . a:argsd.title
         retu call('vc#utils#lstfiles', [a:path, a:argsd.brecursive, 0])
     else
         retu []

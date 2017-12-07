@@ -88,6 +88,32 @@ fun! vc#Info(...)  "{{{2
 endf
 "2}}}
 
+function! vc#EnableBufferSetup(...)
+    if g:vc_enable_buffers != 1 | retu | en
+	augroup VCBufEnter
+		au!
+		au BufEnter * call vc#BuffersSetup()
+	augroup END
+endf
+
+fun! vc#BuffersSetup(...) "{{{2
+	if exists('b:vc_file_meta') | retu | en
+    let target = vc#utils#fnameescape(expand('%'))
+    call vc#repos#meta(target, "")
+endf
+"2}}}
+
+fun! vc#BranchName(...) "{{{2
+    try
+        if g:vc_enable_buffers != 1
+            call vc#BuffersSetup(a:000)
+        endif
+        retu b:vc_file_meta.branch
+    catch | endtry
+    retu "-"
+endf
+"2}}}
+
 fun! vc#Revert(bang, ...)  "{{{2
     try
         call vc#init()

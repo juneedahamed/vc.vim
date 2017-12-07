@@ -149,7 +149,8 @@ let s:maps = {
             \ "browse.checkout": "vc#svn#checkout",
             \ "revertcmd": "vc#svn#revertcmd",
             \ "frmtrevfname": "vc#utils#formatrevisionandfname",
-            \ "frmtbranchname": "vc#svn#frmtbranchname",
+            \ "frmtbranchname": "vc#svn#frmtbranchname", 
+            \ "branchname":  "vc#svn#curbranchname",
             \ },
         \ "-git": {
             \ "meta": "vc#git#meta",
@@ -191,6 +192,7 @@ let s:maps = {
             \ "browse.movecmd": "vc#git#domove",
             \ "frmtrevfname": "vc#utils#formatrevisionandfname",
             \ "frmtbranchname": "vc#git#frmtbranchname",
+            \ "branchname":  "vc#git#curbranchname",
             \ "push": "vc#git#push",
             \ "push.cmdops": "vc#git#pushcmdops",
             \ "fetch": "vc#git#fetch",

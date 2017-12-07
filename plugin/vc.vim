@@ -75,3 +75,6 @@ if exists('g:vc_allow_leader_mappings') && g:vc_allow_leader_mappings == 1
     map <silent> <leader>q :diffoff! <CR> :q<CR>
 endif
 "}}}
+
+call vc#EnableBufferSetup()
+

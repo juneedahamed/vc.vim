@@ -27,6 +27,7 @@ fun! vc#bzr#meta(entity) "{{{2
     let metad.bzrdir = vc#utils#joinpath(wrd, ".bzr")
     "Path with respect to repo
     let metad.repoUrl = vc#utils#fnameescape(substitute(fullpath, wrd, '', ''))
+    let b:vc_file_meta = metad
     retu metad
 endf
 

@@ -14,6 +14,8 @@ fun! vc#fs#meta(entity) "{{{2
     let metad.local = 1
     let metad.repoUrl = ""
     let metad.wrd = getcwd()
+    let metad.branch = "NA"
+    let b:vc_file_meta = metad
     retu metad
 endf
 "2}}}
