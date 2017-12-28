@@ -30,8 +30,14 @@ fun! vc#act#blame(argsd)
     setlocal buftype=nofile bufhidden=wipe nobuflisted noswapfile
     setlocal nowrap nofoldenable nonumber norelativenumber nomodified readonly
     setlocal scrollbind
+    if exists('+cursorbind')
+        setlocal cursorbind
+    endif
     wincmd p " return to previous window
     setlocal scrollbind
+    if exists('+cursorbind')
+        setlocal cursorbind
+    endif
     syncbind
     retu vc#passed()
 endf
