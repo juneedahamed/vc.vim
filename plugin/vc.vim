@@ -50,8 +50,11 @@ if index(vc#repos#repos(), "-hg") >= 0
 endif
 
 com! -n=* VCGrep call vc#grep#do("", <q-args>)
-nmap + :<C-u>call vc#grep#do("*".fnamemodify(expand('%'), ':e'), expand("<cword>")) <CR>
-vmap + :<C-u>call vc#grep#do("*".fnamemodify(expand('%'), ':e'), expand("<cword>")) <CR>
+
+if !exists("g:no_vc_maps") || g:no_vc_maps == 0
+    nmap + :<C-u>call vc#grep#do("*".fnamemodify(expand('%'), ':e'), expand("<cword>")) <CR>
+    vmap + :<C-u>call vc#grep#do("*".fnamemodify(expand('%'), ':e'), expand("<cword>")) <CR>
+endif
 
 "}}}
 
