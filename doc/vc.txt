@@ -1054,6 +1054,14 @@ is enabled. To disable at .vimrc code >
     let g:vc_autocomplete_svnurls = 0
 <
 
+                                                  *'g:vc_commit_msg_template'*
+Supply a template that's inserted into the |:VCCommit| buffer before use.
+Default is a blank line. Each element in the list will be a line, so empty
+string will be a blank line. To setup a template in .vimrc: >
+
+    let g:vc_commit_msg_template = ['[PRJ] ', '', '', 'Review:', '', 'Test:']
+<
+
                                              *'g:vc_commit_allow_blank_lines'*
 This option allows blank lines inbetween the comments, Default strips of the 
 blank lines. When blank lines are available as comments VCLog will not show

@@ -576,7 +576,7 @@ fun! vc#utils#commitheader(meta, thefiles, dscr) "{{{2
         call add(blines, "VC: Operations : " . a:dscr)
     endif
     call add(blines, 'VC: ---------------Enter Comments below this line--------------------')
-    call add(blines, '')
+    call extend(blines, get(g:, "vc_commit_msg_template", ['']))
     let b:vc_meta = a:meta
     retu blines
 endf
