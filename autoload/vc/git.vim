@@ -60,7 +60,7 @@ fun! s:alogpfrmt()
 endf
 
 fun! s:precmd(meta)
-    "retu printf('%s -C "%s" ', s:CMD_PRE, a:meta.wrd)  -C option after 1.8 only
+   "retu printf('%s -C "%s" ', s:CMD_PRE, a:meta.wrd)  -C option after 1.8 only
     retu printf('%s --git-dir %s --work-tree %s ', s:CMD_PRE, a:meta.gitdir, a:meta.wrd)
 endf
 
@@ -115,9 +115,52 @@ fun! s:fetchcmd(meta, cargs)
 endf
 "2}}}
 
+fun! vc#git#fetchwrd(entity) "{{{2
+    if exists("b:vc_gittree") && exists("b:vc_worktree")
+        retu [vc#passed(), b:vc_gittree, b:vc_worktree]
+    endif
+    let fullpath = fnamemodify(vc#utils#expand(a:entity), ':p')
+    let [gittree, worktree] = s:_fetch_gittree_work_tree(fullpath)
+    if gittree != "" && worktree != ""
+        let [b:vc_gittree, b:vc_worktree] = [gittree, worktree]
+        retu [vc#passed(), gittree, worktree]
+    endif
+    retu [vc#failed(), vc#utils#fnameescape(getcwd()), vc#utils#fnameescape(getcwd())]
+endf
+
+fun! s:_fetch_gittree_work_tree(cwd)
+    let [maxtries, cwd, visitedpath] = [10, a:cwd, ""]
+    if !isdirectory(cwd) | let cwd = fnamemodify(cwd, ":h") | en
+    while maxtries > 0 && isdirectory(cwd) && cwd != visitedpath
+        let repo = vc#utils#joinpath(cwd, ".git")
+        if isdirectory(repo)
+            let gitdir = repo
+            let cwd = substitute(cwd, '\v[\/]*$', '/', '')
+            let cwd = vc#utils#fnameescape(cwd)
+            let gitdir = substitute(gitdir, '\v[\/]*$', '/', '')
+            let gitdir = vc#utils#fnameescape(gitdir)
+            retu [gitdir, cwd] 
+        elseif filereadable(repo)
+            try
+                let gitdir = split(readfile(repo)[0], ": ")[1]
+                if isdirectory(gitdir)
+                    let cwd = substitute(cwd, '\v[\/]*$', '/', '')
+                    let cwd = vc#utils#fnameescape(cwd)
+                    let gitdir = substitute(gitdir, '\v[\/]*$', '/', '')
+                    let gitdir = vc#utils#fnameescape(gitdir)
+                    retu [gitdir, cwd] 
+                endif
+            catch|endtry
+        endif
+        let [visitedpath, maxtries, cwd] = [cwd, maxtries - 1, fnamemodify(cwd, ":h")]
+    endwhile
+    retu ["", ""]
+endf
+"2}}}
+
 fun! vc#git#meta(entity) "{{{2
     let fullpath = vc#utils#fnameescape(fnamemodify(a:entity, ':p'))
-    let [result, wrd] = vc#utils#fetchwrd(a:entity, ".git")
+    let [result, gitdir, wrd] = vc#git#fetchwrd(a:entity)
     let metad = {}
     let metad.repo = "-git"
     let metad.entity = a:entity   "Name as given from input
@@ -127,7 +170,7 @@ fun! vc#git#meta(entity) "{{{2
     let metad.branch = ""
     let metad.rbranch = ""
     let metad.wrd = wrd
-    let metad.gitdir = vc#utils#joinpath(wrd, ".git")
+    let metad.gitdir = gitdir
     let metad.branch = vc#git#curbranchname(metad)
     "Path with respect to repo
     let metad.repoUrl = vc#utils#fnameescape(substitute(expand(fullpath), expand(wrd), '', ''))
@@ -136,12 +179,12 @@ fun! vc#git#meta(entity) "{{{2
 endf
 
 fun! vc#git#inrepodir(entity)
-    let [result, wrd] = vc#utils#fetchwrd(a:entity, ".git")
+    let [result, gitdir, wrd] = vc#git#fetchwrd(a:entity)
     retu result
 endf
 
 fun! vc#git#member(entity)
-    let [result, wrd] = vc#utils#fetchwrd(a:entity, ".git")
+    let [result, gitdir, wrd] = vc#git#fetchwrd(a:entity)
     if result == vc#passed()
         let meta = vc#git#meta(a:entity)
         let cmd = s:precmd(meta) . "status --porcelain -s " . a:entity
