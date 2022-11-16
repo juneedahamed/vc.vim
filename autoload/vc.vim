@@ -55,11 +55,45 @@ fun! vc#Diff(bang, showerr, ...) "{{{2
 endf
 "2}}}
 
+" let g:vc_blame_opened = 0
+let g:vc_blame_file_wid = 0
+let g:vc_blame_bar_wid = 0
+
+function vc#ToggleBlame(...) abort
+endfunction
+
+function! s:blamebarWid() abort
+  return bufwinid('__vcblame__')
+endfunction
+
+function! s:on_blame_open() abort
+  " let g:vc_blame_opened = 0
+  " let g:vc_blame_file_wid = 0
+endfunction
+
+function! s:onBlameClose() abort
+  echom "revert win " .. g:vc_blame_file_wid
+  call setwinvar(g:vc_blame_file_wid, "&scrollbind", 0)
+  if exists('+cursorbind')
+    call setwinvar(g:vc_blame_file_wid, "&cursorbind", 0)
+  endif
+  let g:vc_blame_opened = 0
+  let g:vc_blame_file_wid = 0
+endfunction
+
+augroup VCBlameActions
+  autocmd!
+  " au BufCreate  __vcblame__ echom 'hi'
+  " au FileType vcblame setlocal nornu nonu
+  au BufWipeout __vcblame__ call s:onBlameClose()
+augroup END
+
 fun! vc#Blame(...)   "{{{2
     try
         call vc#init()
         let disectd = vc#argsdisectlst(a:000, "all")
         let meta = vc#repos#meta(disectd.target, disectd.forcerepo)
+        let g:vc_blame_file_wid = win_getid()
         let argsd = {'meta':meta}
         call vc#act#blame(argsd)
     catch

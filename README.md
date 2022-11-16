@@ -1,3 +1,38 @@
+# vc-svn
+
+This plugin is forked from vc.vim which is the best (or the only usable) Vim plugin for SVN but obviously no longer being maintained so I have to do it myself. 
+I only use the SVN part because there are tons of better choices for Git.
+For now most updates are about `:VCBlame` because all I need is blaming people.
+This repo will be archived as soon as I switch my job because I hate SVN.
+
+## Updates
+
+- VCBlame
+    - [x] Faster
+    - [x] More compact content
+    - [x] Fixed: srollbind/cursorbind bugs (revert win/buf settings after close the bar)
+    - [x] Fixed: (git) missing local modified lines; useless parentheses
+    - [x] Fixed: wrong initial width
+    - [ ] Fix: enter filter mode on error
+    - [ ] use `A` to toggle bar size
+    - [ ] Reuse blame bar
+    - [ ] Auto refresh (write, save, change buf)
+    - [ ] batch mode (???)
+
+
+## Usage
+
+Install:
+
+```
+Plug `Karmenzind/vc-svn.vim`
+```
+
+
+----------------
+Below is the original README.
+----------------
+
 # vc.vim
 
 VIM (VIM 7 and up) plugin for subversion (svn), GIT, HG and BZR repositories.

@@ -393,7 +393,8 @@ fun! vc#git#opencmd(argsd)
 endf
 
 fun! vc#git#blamecmd(argsd)
-    let cmd = s:precmd(a:argsd.meta) . "blame HEAD -- " . a:argsd.meta.fpath
+    " let cmd = s:precmd(a:argsd.meta) . "blame HEAD -- " . a:argsd.meta.fpath
+    let cmd = s:precmd(a:argsd.meta) . "blame -c " . a:argsd.meta.fpath
     retu cmd
 endf
 "2}}}
@@ -403,7 +404,7 @@ fun! vc#git#domove(argsd)  "{{{2
         let [meta, topath, flist] = [a:argsd.meta, a:argsd.topath, a:argsd.flist]
         let cmd = s:precmd(meta) . "mv -v " . get(a:argsd, "cargs", "") . " ". join(flist, " ") . " " . topath
         retu [vc#passed(), cmd]
-    catch 
+    catch
         call vc#utils#dbgmsg("At vc#git#domove", v:exception)
     endt
     retu [vc#failed(), ""]

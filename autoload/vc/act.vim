@@ -6,20 +6,64 @@
 
 "{{{1
 
+function s:reformat(repoarg) abort
+  if a:repoarg == '-svn'
+    " rev author datetime
+    silent %s/\v^\s*(\S+)\s+(\S+) (\S+ \S+).*/\3 \2 \1/
+  elseif a:repoarg == '-git'
+    silent %s/\v^(\S+)\t(\([^\t]+)\t([^\t]+).*/\3 \2 \1/
+    silent %s/\v \((Not Commi.*| +)/ /
+  else
+    silent %s/^\(\s*\S\+\s\+\S\+\) \(\S\+ \S\+\).*/\2 \1/
+  endif
+endfunction
+
+function s:maxLength() abort
+  " https://stackoverflow.com/questions/41283538/how-to-get-the-number-of-column-in-the-longest-line-with-vim-command
+  let widths = map(getline(1, '$'), 'strdisplaywidth(v:val)')
+  let maxWidth = max(widths)
+  return maxWidth
+endfunction
+
+
 "callback funs {{{2
 fun! vc#act#blame(argsd)
+    if &ft =~ '\v(startify|nerdtree|alpha|vcblame)'
+      echo '[VCBlame] not supported for current filetype.'
+      return
+    endif
+
     setlocal nowrap nofoldenable
     call vc#winj#close()
 
-    let cmd="%!" . vc#repos#call(a:argsd.meta.repo, 'blamecmd', a:argsd)
-    keepalt vnew | exec cmd
+    let cmd="silent %!" . vc#repos#call(a:argsd.meta.repo, 'blamecmd', a:argsd)
+    let formatted = 0
+    if has("unix")
+      " if a:argsd.meta.repo =~ '\v-(svn|git)' && executable('awk')
+      if a:argsd.meta.repo == '-svn' && executable('awk')
+        let cmd = cmd .. " | awk '{print $3, $4, $2, $1}'"
+        let formatted = 1
+      elseif a:argsd.meta.repo == '-git' && executable('awk') && executable('sed')
+        let cmd = cmd .. " | awk -F'	' '{print $3, $2, $1}' | sed -e 's/ (\\( \\+\\|Not Commit.*\\)/ /'"
+        let formatted = 1
+      endif
+      echom "preformatted"
+    endif
+
+    keepalt vnew __vcblame__ | exec cmd
 
     " Strip source code from blame output
-    %s/^\(\s*\S\+\s\+\S\+\) \(\S\+ \S\+\).*/\2 \1/
+    if formatted == 0
+      call s:reformat(a:argsd.meta.repo)
+    endif
     nohlsearch
 
     " Fit blame output width
-    let width=strlen(getline('.'))
+    let width = s:maxLength() + 1
+    if !has('nvim')
+      let width += 1
+    endif
+    " let width=strlen(getline('.'))
     exec "setlocal winfixwidth winwidth=" . width
     exec "vertical resize " . width
 
@@ -28,7 +72,7 @@ fun! vc#act#blame(argsd)
     let b:vc_repo = a:argsd.meta.repo
     setlocal filetype=vcblame
     setlocal buftype=nofile bufhidden=wipe nobuflisted noswapfile
-    setlocal nowrap nofoldenable nonumber norelativenumber nomodified readonly
+    setlocal nowrap nofoldenable nonumber norelativenumber nomodified readonly nocursorcolumn
     setlocal scrollbind
     if exists('+cursorbind')
         setlocal cursorbind
