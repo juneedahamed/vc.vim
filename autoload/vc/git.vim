@@ -129,9 +129,9 @@ fun! vc#git#fetchwrd(entity) "{{{2
 endf
 
 fun! s:_fetch_gittree_work_tree(cwd)
-    let [maxtries, cwd, visitedpath] = [10, a:cwd, ""]
+    let [cwd, visitedpath] = [a:cwd, ""]
     if !isdirectory(cwd) | let cwd = fnamemodify(cwd, ":h") | en
-    while maxtries > 0 && isdirectory(cwd) && cwd != visitedpath
+    while isdirectory(cwd) && cwd != visitedpath
         let repo = vc#utils#joinpath(cwd, ".git")
         if isdirectory(repo)
             let gitdir = repo
@@ -142,7 +142,11 @@ fun! s:_fetch_gittree_work_tree(cwd)
             retu [gitdir, cwd] 
         elseif filereadable(repo)
             try
-                let gitdir = split(readfile(repo)[0], ": ")[1]
+                let gitdir = substitute(readfile(repo)[0], '\v^gitdir:\s*|\s+$', '', 'g')
+                "Submodules use a path relative to the .git file
+                if gitdir !~ '\v^(/|\a:[\/])'
+                    let gitdir = simplify(vc#utils#joinpath(cwd, gitdir))
+                endif
                 if isdirectory(gitdir)
                     let cwd = substitute(cwd, '\v[\/]*$', '/', '')
                     let cwd = vc#utils#fnameescape(cwd)
@@ -152,7 +156,7 @@ fun! s:_fetch_gittree_work_tree(cwd)
                 endif
             catch|endtry
         endif
-        let [visitedpath, maxtries, cwd] = [cwd, maxtries - 1, fnamemodify(cwd, ":h")]
+        let [visitedpath, cwd] = [cwd, fnamemodify(cwd, ":h")]
     endwhile
     retu ["", ""]
 endf

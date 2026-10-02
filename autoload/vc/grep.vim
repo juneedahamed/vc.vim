@@ -24,7 +24,6 @@ fun! vc#grep#match(includepattern, word)
     try
         let ipat = a:includepattern == "" ? "*" : a:includepattern
         let cmd = 'grep --include=' . ipat . ' -rl ' . shellescape(a:word) . ' .'
-        let x = input(cmd)
         let shellout = vc#utils#execshellcmd(cmd)
         let shelllist = split(shellout)
         for line in shelllist
