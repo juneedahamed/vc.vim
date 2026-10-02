@@ -23,7 +23,7 @@ fun! vc#grep#match(includepattern, word)
     let entries = []
     try
         let ipat = a:includepattern == "" ? "*" : a:includepattern
-        let cmd = 'grep --include=' . shellescape(ipat) . ' -rl ' . shellescape(a:word) . ' .'
+        let cmd = 'grep -I --exclude-dir=.git --exclude-dir=.svn --exclude-dir=.hg --exclude-dir=.bzr --include=' . shellescape(ipat) . ' -rl ' . shellescape(a:word) . ' .'
         let shellout = vc#utils#execshellcmd(cmd)
         let shelllist = split(shellout)
         for line in shelllist
